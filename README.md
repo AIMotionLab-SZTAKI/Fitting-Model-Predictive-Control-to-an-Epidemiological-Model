@@ -8,7 +8,7 @@ A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A 
   - Konkrét járványmodellre illeszt kontrollt
   - Az optimalizációs eljárást valósítja meg
   - Kirajzolja az eredményt
-  - Meghívja a mapping.py és a optimalzation_model.py fájlokat
+  - Meghívja a `mapping.py` és a `optimalzation_model.py` fájlokat
     
 - **`optimization_model.py`**
   - A járvány model viselkedését leíró kód
@@ -19,7 +19,7 @@ A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A 
 - **`mapping.py`**
   - Felel a terminális halmaz megtalálásáért
   - Könnyebb futtatás érdekében a kapcsolódó információk kommentelve vannak az `optimization.py` fájlban
-  - Meghívja az one_set_simlation.py fájlt
+  - Meghívja az `one_set_simlation.py` fájlt
 
 - **`one_set_simulation.py`**
   - Szimulál egy adott kezdő állapotból kiinduló rendszert
