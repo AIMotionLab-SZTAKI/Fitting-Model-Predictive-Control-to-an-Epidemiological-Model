@@ -1,4 +1,5 @@
 # Fitting-Model-Predictive-Control-to-an-Epidemiological-Model
+A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A feladat különböző járványmodellekre modell-prediktív kontrollt illeszteni.
 - **`mpc_in1d/2d.py`**
   - Egyszerű lineáris rendszerekre illeszt prediktív kontrollt
   - Kirajzolja az eredményt
