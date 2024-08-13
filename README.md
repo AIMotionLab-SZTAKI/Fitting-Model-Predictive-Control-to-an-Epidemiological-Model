@@ -1,2 +1,25 @@
 # Fitting-Model-Predictive-Control-to-an-Epidemiological-Model
-A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A feladat különböző járványmodellekre modell-prediktív kontrollt illeszteni. Az mpc_in1d/2d.py fájlok egyszerű lineáris rendszerekre illeszt prediktív kontrollt, és rajzoltatja ki az eredményt. Az optimization.py egy konkrét járványmodellre illeszt kontrollt. Ebben az optimization.py fájl segít, itt találhatóak a modellre vonatkozó viselkedések, tulajdonságok, és itt valósították meg a diszkretizálást is. A mapping.py felel a terminális halmaz megtalálásáért; a könnyebb futtatás érdekében ez kommentelve van az optimization.py fájlban. Az one_set_simulation.py fájl szimulál egy adott kezdő állapotból kiinduló rendszert, ez segít a mapping.py fájlnak eldönteni, hogy egy halmaz terminális-e vagy sem.
+- **`mpc_in1d/2d.py`**
+  - Egyszerű lineáris rendszerekre illeszt prediktív kontrollt
+  - Kirajzolja az eredményt
+
+- **`optimization.py`**
+  - Konkrét járványmodellre illeszt kontrollt
+  - Az optimalizációs eljárást valósítja meg
+  - Kirajzolja az eredményt
+  - Meghívja a mapping.py és a optimalzation_model.py fájlokat
+    
+- **`optimization_model.py`**
+  - A járvány model viselkedését leíró kód
+  - Paramétereket tartalmazz, mint kiinduló állapot, mind időhorizont
+  - A diszkretizálást is megvalósítja
+
+
+- **`mapping.py`**
+  - Felel a terminális halmaz megtalálásáért
+  - Könnyebb futtatás érdekében a kapcsolódó információk kommentelve vannak az `optimization.py` fájlban
+  - Meghívja az one_set_simlation.py fájlt
+
+- **`one_set_simulation.py`**
+  - Szimulál egy adott kezdő állapotból kiinduló rendszert
+  - Segít a `mapping.py` fájlnak eldönteni, hogy egy halmaz terminális-e vagy sem
