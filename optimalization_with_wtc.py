@@ -17,10 +17,10 @@ x_init=np.ones((8,t_end),dtype=float)
 # Kvantálása a beavatkozó jelnek
 k=10
 u_values=np.ones(k)
-for  i in range (k):
-    u_values[i]=i/k
+for  i in range (k-1):
+    u_values[i]=i/10
 tmin=np.ones(len(u_values))*2
-tmax=np.ones(len(u_values))*5  
+tmax=np.ones(len(u_values))*4
 # Ez a függvény felelős az optimalizációs probléma felépítésért
 # Bemenet: Kezdőállapot a dinamikának
 # Kimenet: Az optimalizálandó modell
@@ -57,16 +57,15 @@ def create_model (x0param):
         else:
             model.H[0,i].fix(0)
  
-    #h_counting(model)
+    h_counting(model)
     system_dynamic(model)
     u_idx_const(model)
     u_rule(model)
-    #wtc_rule_downer(model)
-    #wtc_rule_upper(model)
+    wtc_rule_downer(model)
+    wtc_rule_upper(model)
     return model
 
-# Az optimalizálandó kifejezés, minimalizálni akarjuk az eltérést a terminális állapottól, 
-# Illetve a beavatkozásokat is minimalizálni akarjuk (20-as egyenlet)
+# A számolásért felelős függvény (9-es egyenlet)
 def h_counting(model):
     for t in model.horizont:
         for j in  range(len(model.u_values)):
@@ -104,6 +103,7 @@ def u_rule(model):
 def u_idx_const(model):
     for t in model.horizont:
         model.u_idx_constraints.add(sum(model.u_idx[t,:])==1) 
+# A beavatkozásokat  minimalizálni akarjuk (20-as egyenlet) 
 def obj_rule(model):
     
     return sum(((model.u[t]**2)) for t in model.horizont)
