@@ -27,11 +27,11 @@ A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A 
   - Szimulál egy adott kezdő állapotból kiinduló rendszert
   - Segít a `mapping.py` fájlnak eldönteni, hogy egy halmaz terminális-e vagy sem
   
--**`optimalization_with_wtc`**
+- **`optimalization_with_wtc`**
   - Ugyan az mint az `optimization.py` csak waiting time constraint-t is tartalmaz
   - Sokkal kisebb léptékeket alkalmaz
   - Nem tartalmazza a terminális halmaz elérését
     
--**`optimalization_modell_with_wtc`**
+- **`optimalization_modell_with_wtc`**
   - Ugyan az mint az `optimization_modell.py` csak waiting time constraint-t is tartalmaz
   - Nem tartalmazza a terminális halmaz elérését
