@@ -2,10 +2,10 @@ import numpy as np
 import pyomo.environ as pyo
 import matplotlib.pyplot as plt
 import optimalization_modell as m
-import mapping as mp
+#import mapping as mp
 dt=m.dt
 #terminal_state=mp.get_terminal_state()
-terminal_state=[0.3]
+terminal_state=[0.6]
 # Paraméterek a szabályozásnak:
 # Az idő horizont melyen irányítani szeretnénk 
 t_end=m.t_end
@@ -14,7 +14,7 @@ x0 = m.x0
 # inicializációs az optimalizációnak
 x_init=np.ones((8,t_end),dtype=float)
 # Kvantálása a beavatkozó jelnek
-k=1000
+k=1
 # Ez a függvény felelős az optimalizációs probléma felépítésért
 # Bemenet: Kezdőállapot a dinamikának
 # Kimenet: Az optimalizálandó modell
@@ -48,7 +48,7 @@ def create_model (x0param):
 # illetve a beavatkozásokat is minimalizálni akarjuk (20-as egyenlet)
 def obj_rule(model):
     
-    return sum(((model.u[int(t/7)]*(0.1/k)**2+(model.x[t,0]-terminal_state[0])**2)) for t in model.horizont)
+    return sum((((0.1/k)**2*model.u[int(t/7)])+(model.x[t,0]-terminal_state[0])**2) for t in model.horizont)
 
 # A dinamika betartásáért felelős függvény (21-es egyenlet)
 def system_dynamic(model):
@@ -74,7 +74,7 @@ M=create_model(x0)
 # Kiválasztjuk a solvert
 solution = pyo.SolverFactory('baron')
 # És megoldjuk a solver segítségével 
-solution=solution.solve(M, tee=True)
+solution=solution.solve(M, tee=True,options={'MaxTime': -1})
 # Tömbök az adatok eltárolásához
 s_values=[np.float64]*len(M.horizont)
 l_values=[np.float64]*len(M.horizont)
@@ -87,14 +87,14 @@ d_values=[np.float64]*len(M.horizont)
 u_values=[np.float64]*len(M.horizont)
 # Az adatok eltárolása, illetve a numerikus adatok korrekciója a normálás aés korrigálása érdekében
 for i in M.horizont:
-    s_values[i]=M.x[i,0].value*m.real_population*m.correction
-    l_values[i]=M.x[i,1].value*m.real_population*m.correction
-    p_values[i]=M.x[i,2].value*m.real_population*m.correction
-    i_values[i]=M.x[i,3].value*m.real_population*m.correction
-    a_values[i]=M.x[i,4].value*m.real_population*m.correction
-    h_values[i]=M.x[i,5].value*m.real_population*m.correction
-    r_values[i]=M.x[i,6].value*m.real_population*m.correction
-    d_values[i]=M.x[i,7].value*m.real_population*m.correction
+    s_values[i]=M.x[i,0].value*m.real_population
+    l_values[i]=M.x[i,1].value*m.real_population
+    p_values[i]=M.x[i,2].value*m.real_population
+    i_values[i]=M.x[i,3].value*m.real_population
+    a_values[i]=M.x[i,4].value*m.real_population
+    h_values[i]=M.x[i,5].value*m.real_population
+    r_values[i]=M.x[i,6].value*m.real_population
+    d_values[i]=M.x[i,7].value*m.real_population
 
     u_values[i]=M.u[int(i/7)].value*(0.1/k)
     

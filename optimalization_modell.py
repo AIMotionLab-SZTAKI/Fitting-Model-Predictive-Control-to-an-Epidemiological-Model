@@ -2,12 +2,10 @@ import numpy as np
 from scipy.integrate import solve_ivp
 # Paraméterek a szimulációhoz
 # A horizont melyen optimalizálunk
-t_end=180
-# Korrekció a numerikus stabilitásért (???)
-correction=1000
-real_population=9800000/correction
-real_latent=50/correction
-real_max_patients=20000/correction
+t_end=150
+real_population=9800000
+real_latent=50
+real_max_patients=20000
 # A mintavételezés idő tartalma
 dt=1
 # Kezdőállapot a rednszernek
@@ -55,7 +53,7 @@ def real_model_simulation(u_values):
     t_span=np.array([t0_step,t_end_step])
     x=x0
     hospital=[]
-    hospital.append(x[5]*real_population*correction)
+    hospital.append(x[5]*real_population)
         
 
     while(t0_step < t_end-1):
@@ -65,7 +63,7 @@ def real_model_simulation(u_values):
         t0_step=t0_step+dt
         t_end_step=t_end_step+dt
         t_span=np.array([t0_step,t_end_step])
-        hospital.append(x[5]*real_population*correction)    
+        hospital.append(x[5]*real_population)    
     return hospital
 
 # Segéd függvény, mivel pyomo könyvtárban az optimalizálandó változókat nem használhatunk numpy
