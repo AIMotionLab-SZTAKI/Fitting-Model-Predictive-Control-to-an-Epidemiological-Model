@@ -2,10 +2,10 @@ import numpy as np
 from scipy.integrate import solve_ivp
 # Paraméterek a szimulációhoz
 # A horizont melyen optimalizálunk
-t_end=150
+t_end=350
 real_population=9800000
 real_latent=50
-real_max_patients=20000
+real_max_patients=17000
 # A mintavételezés idő tartalma
 dt=1
 # Kezdőállapot a rednszernek

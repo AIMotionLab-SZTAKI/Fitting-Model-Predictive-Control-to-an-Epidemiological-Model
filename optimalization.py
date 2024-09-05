@@ -5,7 +5,7 @@ import optimalization_modell as m
 #import mapping as mp
 dt=m.dt
 #terminal_state=mp.get_terminal_state()
-terminal_state=[0.6]
+terminal_state=[0.7]
 # Paraméterek a szabályozásnak:
 # Az idő horizont melyen irányítani szeretnénk 
 t_end=m.t_end
@@ -14,7 +14,8 @@ x0 = m.x0
 # inicializációs az optimalizációnak
 x_init=np.ones((8,t_end),dtype=float)
 # Kvantálása a beavatkozó jelnek
-k=1
+horizontal=7
+vertical=1000
 # Ez a függvény felelős az optimalizációs probléma felépítésért
 # Bemenet: Kezdőállapot a dinamikának
 # Kimenet: Az optimalizálandó modell
@@ -22,8 +23,8 @@ def create_model (x0param):
     model=pyo.ConcreteModel()
     model.horizont=range(t_end)
     model.dim=range(8)
-    model.u_kvantum=10*k
-    model.weeks=range(int((t_end-1)/7)+1)
+    model.u_kvantum=10*vertical
+    model.weeks=range(int((t_end-1)/horizontal)+1)
         
     model.x=pyo.Var(model.horizont,model.dim,domain=pyo.NonNegativeReals)
     model.u=pyo.Var(model.weeks,domain=pyo.NonNegativeIntegers,bounds=(0,model.u_kvantum))
@@ -37,6 +38,8 @@ def create_model (x0param):
     for i in range(1,len(model.horizont)):
         for j in range(len(model.dim)):
             model.x[i,j].value=x_init[j,i]
+        if int(i/horizontal)>int(250/horizontal):
+            model.u[int(i/horizontal)].fix(0.)
                        
     for j in model.dim:
             model.x[0,j].fix(x0param[j])    
@@ -48,18 +51,19 @@ def create_model (x0param):
 # illetve a beavatkozásokat is minimalizálni akarjuk (20-as egyenlet)
 def obj_rule(model):
     
-    return sum((((0.1/k)**2*model.u[int(t/7)])+(model.x[t,0]-terminal_state[0])**2) for t in model.horizont)
+    return sum(((model.x[t,0]-terminal_state[0])**2) for t in model.horizont)
 
 # A dinamika betartásáért felelős függvény (21-es egyenlet)
 def system_dynamic(model):
     x_temp=[None]*len(model.dim)
     for t in model.horizont:
         # Korlátozzuk a kórházak kapacitásást is (22-es egyenlet)
-        model.hospital_capacity.add(model.x[t,5]<=m.real_max_patients/m.real_population)
+        if (t%15==0 and t>75 and t<200):
+            model.hospital_capacity.add(model.x[t,5]<=m.real_max_patients/m.real_population)
         for i in model.dim:
             x_temp[i]=model.x[t,i]
         # A diferenciálegyenlet rendszer numerikus megoldásának léptetésért felelős 
-        res=m.runge_kutta_4_step(x_temp,(0.1/k)*model.u[int(t/7)])
+        res=m.runge_kutta_4_step(x_temp,(0.1/vertical)*model.u[int(t/horizontal)])
         for j in model.dim:
 
             if t < max(model.horizont):
@@ -96,7 +100,7 @@ for i in M.horizont:
     r_values[i]=M.x[i,6].value*m.real_population
     d_values[i]=M.x[i,7].value*m.real_population
 
-    u_values[i]=M.u[int(i/7)].value*(0.1/k)
+    u_values[i]=M.u[int(i/horizontal)].value*(0.1/vertical)
     
 # Az adatok vizualizáció érdekében létrehozott tömb
 t_values=np.linspace(0,t_end-1,len(M.horizont))
@@ -139,3 +143,4 @@ plt.ylabel("Control scenarios")
 plt.grid()
 
 plt.show()
+print(u_values)
