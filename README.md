@@ -35,3 +35,11 @@ A nyári szakmai gyakorlat dokumentációját és kódját tartalmazó repó. A 
 - **`optimalization_modell_with_wtc`**
   - Ugyan az mint az `optimization_modell.py` csak waiting time constraint-t is tartalmaz
   - Nem tartalmazza a terminális halmaz elérését
+    
+- **`optimalization_quasi_terminal_set`**
+  - Ugyan az mint az `optimization.py` csak tovább dondolt controllingal
+  - Tartalmazza a kvázi terminális halmaz elérését
+
+- **`optimalization_modell_quasi_terminal_set`**
+  - Ugyan az mint az `optimization_modell.py` csak tovább gondolt controllingal
+  - Tartalmazza a kvázi terminális halmaz elérését
