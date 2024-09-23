@@ -5,7 +5,7 @@ import optimalization_modell as m
 #import mapping as mp
 dt=m.dt
 #terminal_state=mp.get_terminal_state()
-terminal_state=[0.7]
+terminal_state=[0.4]
 # Paraméterek a szabályozásnak:
 # Az idő horizont melyen irányítani szeretnénk 
 t_end=m.t_end
@@ -15,7 +15,7 @@ x0 = m.x0
 x_init=np.ones((8,t_end),dtype=float)
 # Kvantálása a beavatkozó jelnek
 horizontal=7
-vertical=1000
+vertical=10000
 # Ez a függvény felelős az optimalizációs probléma felépítésért
 # Bemenet: Kezdőállapot a dinamikának
 # Kimenet: Az optimalizálandó modell
@@ -38,8 +38,6 @@ def create_model (x0param):
     for i in range(1,len(model.horizont)):
         for j in range(len(model.dim)):
             model.x[i,j].value=x_init[j,i]
-        if int(i/horizontal)>int(250/horizontal):
-            model.u[int(i/horizontal)].fix(0.)
                        
     for j in model.dim:
             model.x[0,j].fix(x0param[j])    
@@ -51,15 +49,14 @@ def create_model (x0param):
 # illetve a beavatkozásokat is minimalizálni akarjuk (20-as egyenlet)
 def obj_rule(model):
     
-    return sum(((model.x[t,0]-terminal_state[0])**2) for t in model.horizont)
+    return sum((((0.1/vertical)*model.u[int(t/horizontal)])**2+(model.x[t,0]-terminal_state[0])**2) for t in model.horizont)
 
 # A dinamika betartásáért felelős függvény (21-es egyenlet)
 def system_dynamic(model):
     x_temp=[None]*len(model.dim)
     for t in model.horizont:
         # Korlátozzuk a kórházak kapacitásást is (22-es egyenlet)
-        if (t%15==0 and t>75 and t<200):
-            model.hospital_capacity.add(model.x[t,5]<=m.real_max_patients/m.real_population)
+        model.hospital_capacity.add(model.x[t,5]<=m.real_max_patients/m.real_population)
         for i in model.dim:
             x_temp[i]=model.x[t,i]
         # A diferenciálegyenlet rendszer numerikus megoldásának léptetésért felelős 
@@ -77,6 +74,8 @@ def system_dynamic(model):
 M=create_model(x0)
 # Kiválasztjuk a solvert
 solution = pyo.SolverFactory('baron')
+print(len(M.constraints)+len(M.hospital_capacity))
+print(len(M.x)+len(M.u))
 # És megoldjuk a solver segítségével 
 solution=solution.solve(M, tee=True,options={'MaxTime': -1})
 # Tömbök az adatok eltárolásához
@@ -99,7 +98,6 @@ for i in M.horizont:
     h_values[i]=M.x[i,5].value*m.real_population
     r_values[i]=M.x[i,6].value*m.real_population
     d_values[i]=M.x[i,7].value*m.real_population
-
     u_values[i]=M.u[int(i/horizontal)].value*(0.1/vertical)
     
 # Az adatok vizualizáció érdekében létrehozott tömb
@@ -142,5 +140,18 @@ plt.xlabel("Time [days]")
 plt.ylabel("Control scenarios")
 plt.grid()
 
+plt.show()
+u_extended=u_values
+for i in range(1500):
+    u_extended.append(0)
+    
+m.t_end=len(u_extended)
+hospital_extended=m.real_model_simulation(u_extended)
+t_values=np.linspace(0,len(u_extended)-1,len(u_extended))
+plt.plot(t_values, hospital_extended,color="k",linestyle="-",marker=".")
+plt.legend(['The real system respond '])
+plt.xlabel("Time [days]")
+plt.ylabel("Cardinality of the set [sample]")
+plt.grid()
 plt.show()
 print(u_values)
