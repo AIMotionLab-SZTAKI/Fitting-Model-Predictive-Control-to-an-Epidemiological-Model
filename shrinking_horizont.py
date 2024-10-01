@@ -19,7 +19,7 @@ while shrinking_time_horizont>0:
     shrinking_time_horizont=shrinking_time_horizont-time_shrinking
     index=index+time_shrinking
     if shrinking_time_horizont>=time_shrinking:
-        x_first=x_opt[:,time_shrinking].T
+        x_first=x_opt[:,time_shrinking]
     x_init=from_x_u_y_to_solution(x_opt[:,time_shrinking:],u_opt[:,time_shrinking:],y_opt[:,time_shrinking:],shrinking_time_horizont)
     print(from_x_u_y_to_solution(x_opt[:,time_shrinking:],u_opt[:,time_shrinking:],y_opt[:,time_shrinking:],shrinking_time_horizont).shape)
 

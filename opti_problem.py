@@ -7,15 +7,15 @@ from parameters import min_control_value,max_control_value,hospital_capacity,x0
 class Problem:
     def __init__(self,casadi_net_f, casadi_net_h,x0,time_horizont,objective_function,dynamic_for_one_step):
     
-        self.x = cs.SX.sym('x', 16,time_horizont)
-        self.u = cs.SX.sym('u', 1,time_horizont)
-        self.y = cs.SX.sym('y', 1,time_horizont)
+        self.x = cs.MX.sym('x', 16,time_horizont)
+        self.u = cs.MX.sym('u', 1,time_horizont)
+        self.y = cs.MX.sym('y', 1,time_horizont)
 
         self.objective = objective_function(self.u)
         self.system_step=dynamic_for_one_step
         constraints_for_step_state = []
         constraints_for_output=[]
-        constraints_for_step_state.append( self.x[:, 0] -x0.T )
+        constraints_for_step_state.append( self.x[:, 0] -x0)
         
     
         for i in range(time_horizont):
