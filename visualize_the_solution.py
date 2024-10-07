@@ -11,5 +11,5 @@ def visualize_sol(Y,U):
     plt.show()
 [Y,U]=shrinking_MPC()
 visualize_sol(Y,U)
-[Y,U]=rolling_MPC()
-visualize_sol(Y,U)
+# [Y,U]=rolling_MPC()
+# visualize_sol(Y,U)

@@ -1,5 +1,5 @@
 from opti_problem import *
-from parameters import x0,total_time_horizont
+from parameters import x0,total_time_horizont,grace_time
 
 
 def rolling_MPC():

@@ -26,15 +26,16 @@ class Problem:
                 [x_next, y_out] = self.system_step( casadi_net_f,casadi_net_h, self.x[:,i].T, self.u[:, i].T )
                 constraints_for_step_state.append( self.x[:, i+1] - x_next.T )
                 constraints_for_output.append( self.y[:,i]-y_out )
-            
+    
             
             
         step_state = cs.vertcat( *constraints_for_step_state )
         step_output = cs.vertcat( *constraints_for_output )
-        g = cs.vertcat( step_state, step_output )
+        g = cs.vertcat( step_state, step_output)
 
         for i in range(time_horizont):
-            g = cs.vertcat(g, self.u[:, i]) 
+            g = cs.vertcat(g, self.u[:, i])
+        for i in range(time_horizont): 
             g = cs.vertcat(g, self.y[:, i])  
                 
         nlp = { 'x': cs.vertcat(cs.vec(self.x), cs.vec(self.u),cs.vec(self.y)), 
@@ -48,9 +49,10 @@ class Problem:
                 lbg[i]=0
                 ubg[i]=0
             else:
-                if(i%2==0):
+                if i<17*time_horizont+time_horizont:
                     lbg[i]=min_control_value
                     ubg[i]=max_control_value
+                
                 else:
                     lbg[i]=0
                     ubg[i]=hospital_capacity
@@ -64,8 +66,17 @@ class Problem:
         solver = cs.nlpsol( 'solver', solver_type, self.nlp )
         solution = solver( lbg=self.floor_constraints, ubg=self.ceilloing_constraints,x0=x_init)  
         return solution
-
-
+class ShrinkingProblem(Problem):
+      def __init__(self,casadi_net_f, casadi_net_h,x0,time_horizont,grace_time,objective_function,dynamic_for_one_step):
+        super().__init__(casadi_net_f, casadi_net_h,x0,time_horizont,objective_function,dynamic_for_one_step)
+        for i in range (time_horizont):
+            if i<time_horizont-grace_time:
+                self.floor_constraints[i+17*time_horizont]=min_control_value
+                self.ceilloing_constraints[i+17*time_horizont]=max_control_value
+            else:
+                self.floor_constraints[i+17*time_horizont]=0
+                self.ceilloing_constraints[i+17*time_horizont]=0
+                
 def visualize(solution,time_horizont):
         
     [x_opt,y_opt,u_opt]=from_solution_to_x_u_y(solution,time_horizont)
