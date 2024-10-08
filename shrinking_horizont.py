@@ -1,7 +1,6 @@
 from opti_problem import *
 from parameters import x0,total_time_horizont,grace_time
-from matplotlib import pyplot as plt
-
+from support import *
 
 def shrinking_MPC():
     shrinking_time_horizont=total_time_horizont
@@ -14,7 +13,7 @@ def shrinking_MPC():
     x_init=np.zeros((18*total_time_horizont,1))
   
     while shrinking_time_horizont>0:
-        MyProblem=ShrinkingProblem(nerual_models['f'],nerual_models['h'],x_first,shrinking_time_horizont,grace_time,cs.sumsqr,system_step)
+        MyProblem=Problem_With_Grace_time(nerual_models['f'],nerual_models['h'],x_first,shrinking_time_horizont,grace_time,cs.sumsqr,system_step)
         MySolution=MyProblem.get_soultion('ipopt',x_init)
         [x_opt,u_opt,y_opt]=from_solution_to_x_u_y(MySolution,shrinking_time_horizont)
         U[:,index:]=u_opt
