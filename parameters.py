@@ -1,6 +1,6 @@
 import casadi as cs
-total_time_horizont = 100
-grace_time = 10
+total_time_horizont = 180
+grace_time = 40
 hospital_capacity = 200
 min_control_value = 0
 max_control_value = 16 
