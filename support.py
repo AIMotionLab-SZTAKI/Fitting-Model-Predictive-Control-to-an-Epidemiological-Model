@@ -4,21 +4,25 @@ from torch_nets import get_net_models
 from torch_nets import system_step
 import matplotlib.pyplot as plt
 
-
-def simulate(U):
+def simulate(U,x0,noise_dec):
     Y = []
-    x0=np.array([[-0.0089,  4.3177,  3.2526, -0.6230, -0.4863, -2.9737,  1.5976, -0.6301,
-                0.9218,  3.0298, -2.0962,  1.4180, -3.7520,  3.4533, -1.0764,  0.0506]])
+
     x=x0
     nerual_models=get_net_models()
-
-    for i in range(total_time_horizont):
+    
+    
+    for i in range(holding_time):
         [x_next, y_out] = system_step( nerual_models['f'],nerual_models['h'], x, U[i])
-        x=x_next
+        
+        if noise_dec==1 :
+            noise = np.random.rand() * 0.025
+            x=x_next+noise
+        else:
+            x=x_next
         Y.append(np.squeeze(y_out))   
 
     Y = np.array(Y)
-    return Y
+    return [Y,x_next]
 
 def visualize_sol(Y,U):
     plt.subplot(2,1,1)
@@ -28,18 +32,18 @@ def visualize_sol(Y,U):
     plt.plot(U,'.')
     plt.grid()
     plt.show()
-def from_solution_to_x_u_y(solution,total_time_horizont):
-    control_time=int((total_time_horizont-1)/holding_time)+1
+def from_solution_to_x_u_y(solution,time_horizon):
+    control_time=int((time_horizon-1)/holding_time)+1
     solution_x_u_y = solution[ 'x' ]  
-    x_opt = solution_x_u_y[ :16*total_time_horizont].reshape(( 16, total_time_horizont ))  
-    u_opt = solution_x_u_y[ 16*total_time_horizont:16*total_time_horizont + control_time ].reshape(( 1, control_time ))   
-    y_opt = solution_x_u_y[ 16*total_time_horizont+control_time: ].reshape((1, total_time_horizont))
+    x_opt = solution_x_u_y[ :16*time_horizon].reshape(( 16, time_horizon ))  
+    u_opt = solution_x_u_y[ 16*time_horizon:16*time_horizon + control_time ].reshape(( 1, control_time ))   
+    y_opt = solution_x_u_y[ 16*time_horizon+control_time: ].reshape((1, time_horizon))
     return [x_opt,u_opt,y_opt]
-def from_x_u_y_to_solution(x_opt,u_opt,y_opt,total_time_horizont):
-    control_time=int((total_time_horizont-1)/holding_time)+1
-    x_faltten=cs.reshape(x_opt,total_time_horizont*16,1)
+def from_x_u_y_to_solution(x_opt,u_opt,y_opt,time_horizon):
+    control_time=int((time_horizon-1)/holding_time)+1
+    x_faltten=cs.reshape(x_opt,time_horizon*16,1)
     u_faltten=cs.reshape(u_opt,control_time,1)
-    y_faltten=cs.reshape(y_opt,total_time_horizont,1)
+    y_faltten=cs.reshape(y_opt,time_horizon,1)
     result=cs.vertcat(x_faltten,u_faltten,y_faltten)
     return result
 def u_extended(U,horizont):

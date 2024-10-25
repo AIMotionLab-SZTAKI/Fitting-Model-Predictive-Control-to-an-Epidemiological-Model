@@ -84,16 +84,4 @@ class Problem_With_Grace_time(Problem):
                 
 
     
-# nerual_models=get_net_models()
-# x_first=x0
-# time_shrinking=10
-# index=0
-# control_time=int((total_time_horizont-1)/holding_time)+1
-# x_init=np.zeros((17*total_time_horizont+control_time,1)) 
-# MyProblem=Problem_With_Grace_time(nerual_models['f'],nerual_models['h'],x_first,total_time_horizont,grace_time,holding_time,cs.sumsqr,system_step)
-# MySolution=MyProblem.get_soultion('ipopt',x_init)
-# [x_opt,u_opt,y_opt]=from_solution_to_x_u_y(MySolution,total_time_horizont)
-# u_opt_numpy=np.squeeze(np.array(u_opt))
-# y_opt_numpy=np.squeeze(np.array(y_opt))
-
-# visualize_sol(y_opt_numpy,u_opt_numpy)     
+  
