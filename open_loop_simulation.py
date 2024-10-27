@@ -38,15 +38,20 @@ def simualte_with_open_loop (noise,noise_MPC,MPC_type):
     if MPC_type==rolling_MPC:
         x_init=np.zeros((17*rolling_horizont+int((rolling_horizont-1)/holding_time)+1,1))
         for i in range(int(np.ceil(total_time_horizont_extended/delta_time))):
-            if time_horizont>holding_time:
-                [Y,U,X]=MPC_type(noise_MPC,time_horizont,x,grace_time,holding_time,x_init)
+            print(time_horizont,holding_time)
+            if time_horizont>2*holding_time:
                 
+                [Y,U,X]=MPC_type(noise_MPC, time_horizont, x, grace_time, holding_time, x_init)
                 x_init=X
                 U_disc=np.round(U)
                 U_disc[U_disc<0]=0
             else:
-                U=np.zeros(time_horizont)
-                U_disc=U
+                U_disc[0:delta_time]=U[0:delta_time]
+                U_disc[delta_time:2*delta_time]=0
+                [Y_sim,x_next]=simulate(U_disc[0:delta_time*2],x.T,noise)
+                U_system[i*delta_time:(i+2)*delta_time]=U_disc[0:2*delta_time]
+                Y_system[i*delta_time:(i+2)*delta_time]=Y_sim
+                return [Y_system,U_system]         
             if i==0:
                 x=np.array([[-0.0089,  4.3177,  3.2526, -0.6230, -0.4863, -2.9737,  1.5976, -0.6301,
                 0.9218,  3.0298, -2.0962,  1.4180, -3.7520,  3.4533, -1.0764,  0.0506]])

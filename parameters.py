@@ -1,6 +1,6 @@
 import casadi as cs
-total_time_horizont = 35
-grace_time = 14
+total_time_horizont = 14+7
+grace_time = 7
 holding_time = 7
 if total_time_horizont%holding_time==0:
     total_time_horizont_extended=total_time_horizont

@@ -11,7 +11,7 @@ def simulate(U,x0,noise_dec):
     nerual_models=get_net_models()
     
     
-    for i in range(holding_time):
+    for i in range(len(U)):
         [x_next, y_out] = system_step( nerual_models['f'],nerual_models['h'], x, U[i])
         
         if noise_dec==1 :

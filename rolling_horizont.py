@@ -1,16 +1,16 @@
 from opti_problem import *
 from support import *
 def rolling_MPC(noise,time_horizont,x,grace_time, holding_time,x_init):
-    rolling_horizont=(time_horizont-grace_time)-((time_horizont-grace_time)%holding_time)
-    nerual_models=get_net_models()
-    x_first=x
-    grace_time_step=0
-    index=0
-    time_step=holding_time
-    U=np.empty((1,time_horizont))
-    Y=np.empty((1,time_horizont))
-    toggle=0
-    while grace_time_step < grace_time+time_step:
+    rolling_horizont = (time_horizont-grace_time) - ((time_horizont-grace_time)%holding_time)
+    nerual_models = get_net_models()
+    x_first = x
+    grace_time_step = 0
+    index = 0
+    time_step = holding_time
+    U = np.empty((1,time_horizont))
+    Y = np.empty((1,time_horizont))
+    toggle = 0
+    while grace_time_step <= grace_time:
         MyProblem=Problem_With_Grace_time(nerual_models['f'],nerual_models['h'],x_first,rolling_horizont,grace_time_step,holding_time, cs.sumsqr,system_step)
         if noise:
             MyProblem.add_noise(rolling_horizont)
@@ -20,9 +20,9 @@ def rolling_MPC(noise,time_horizont,x,grace_time, holding_time,x_init):
         
         U[:,index:rolling_horizont+index]=u_opt_extended[:,0:rolling_horizont]
         Y[:,index:rolling_horizont+index]=y_opt[:,0:rolling_horizont]
-  
-        print(time_step)
+        
         x_first=x_opt[:,time_step]
+        print(grace_time_step, grace_time + time_step)
         x_init=from_x_u_y_to_solution(x_opt,u_opt,y_opt,rolling_horizont)
         if toggle==0 and grace_time%holding_time!=0:
             grace_time_step=grace_time%holding_time
