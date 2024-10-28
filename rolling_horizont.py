@@ -22,7 +22,6 @@ def rolling_MPC(noise,time_horizont,x,grace_time, holding_time,x_init):
         Y[:,index:rolling_horizont+index]=y_opt[:,0:rolling_horizont]
         
         x_first=x_opt[:,time_step]
-        print(grace_time_step, grace_time + time_step)
         x_init=from_x_u_y_to_solution(x_opt,u_opt,y_opt,rolling_horizont)
         if toggle==0 and grace_time%holding_time!=0:
             grace_time_step=grace_time%holding_time
