@@ -4,6 +4,13 @@ from torch_nets import get_net_models
 from torch_nets import system_step
 import matplotlib.pyplot as plt
 
+def write_array_to_txt(name,array_input):
+    np.savetxt(name,array_input)    
+
+def read_array_from_txt(name):
+    array_loaded=np.loadtxt(name)
+    return array_loaded
+
 def simulate(U,x0,noise_dec):
     Y = []
 
