@@ -60,22 +60,24 @@ def u_extended(U,horizont):
     for i in range (horizont):
         U_result[:,i]=U[int(i/holding_time)] 
     return U_result
-def get_init_state(init_U,simulator):
+def get_init_state(simulator,U_init,encoder):
     results_agg = []
     inputs_agg = []
     run_options_agg = []
-    encoder = get_encoder()
     for i in range (30):
-        input_idx,run_options=init_U[i],input_sets[int(init_U[i])]
+        input_idx,run_options=U_init[i],input_sets[int(U_init[i])]
         results = simulator.runForDay(run_options)
         results_agg.append(results)
         inputs_agg.append(input_idx)
         run_options_agg.append(run_options)
     hospitalized_agg=get_results(results_agg)
+    [uhist,yhist]=norm_and_unsqueeze(inputs_agg,hospitalized_agg)
+    x0 = encoder(uhist, yhist)
+    x = x0
+    return [x0.detach().numpy(),inputs_agg,hospitalized_agg]
+def norm_and_unsqueeze(inputs_agg,hospitalized_agg):
     InputData=torch.Tensor(unorm(inputs_agg))
     OutputData = torch.Tensor(ynorm(hospitalized_agg))
     uhist = InputData[:30].unsqueeze(0).unsqueeze(2)
     yhist = OutputData[:30].unsqueeze(0).unsqueeze(2)
-    x0 = encoder(uhist, yhist)
-    x = x0
-    return x0
+    return [uhist,yhist]
