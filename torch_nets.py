@@ -1,6 +1,6 @@
 from torch import nn
 import casadi as cs
-from ann_utils import feed_forward_nn,default_state_net,default_output_net
+from ann_utils import feed_forward_nn,default_state_net,default_output_net,default_encoder_net
 import numpy as np
 import torch
 y0 = torch.load("norm/y0.pt")
@@ -97,5 +97,9 @@ def get_net_models():
     }
     return net_model
     
-
+def get_encoder():
+    encoder = default_encoder_net(na=30, nb=30, nu=1, nx=16, ny=1, activation=torch.nn.ReLU, n_nodes_per_layer=32)
+    encoder.load_state_dict(state_dict=torch.load('encoder_dict.pt'))
+    encoder.eval()
+    return encoder
 

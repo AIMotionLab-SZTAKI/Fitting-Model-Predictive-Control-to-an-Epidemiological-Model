@@ -1,8 +1,16 @@
 from parameters import *
 import numpy as np
-from torch_nets import get_net_models
-from torch_nets import system_step
-import matplotlib.pyplot as plt
+import torch
+from torch_nets import get_net_models,system_step,get_encoder,unorm,ynorm,system_step
+
+
+def get_results(resultArray):
+    nHospitalied = []
+    for result in resultArray:
+        hosp = result[6] + result[7]  
+        nHospitalied.append(hosp)
+    return nHospitalied
+
 
 def write_array_to_txt(name,array_input):
     np.savetxt(name,array_input)    
@@ -10,28 +18,11 @@ def write_array_to_txt(name,array_input):
 def read_array_from_txt(name):
     array_loaded=np.loadtxt(name)
     return array_loaded
-
-def simulate(U,x0,noise_dec):
-    Y = []
-
-    x=x0
-    nerual_models=get_net_models()
-    
-    
-    for i in range(len(U)):
-        [x_next, y_out] = system_step( nerual_models['f'],nerual_models['h'], x, U[i])
-        
-        if noise_dec==1 :
-            noise = np.random.rand() * 0.025
-            x=x_next+noise
-        else:
-            x=x_next
-        Y.append(np.squeeze(y_out))   
-
-    Y = np.array(Y)
-    return [Y,x_next]
-
-def visualize_sol(Y,U):
+def visualize_simple(Y):
+    plt.plot(Y)
+    plt.grid()
+    plt.show()
+def visualize_Y_vs_U(Y,U):
     plt.subplot(2,1,1)
     plt.grid()
     plt.plot(Y)
@@ -39,6 +30,17 @@ def visualize_sol(Y,U):
     plt.plot(U,'.')
     plt.grid()
     plt.show()
+def visualize_Y_quess_vs_Y_real(Y_quess,Y_real,U):
+    plt.subplot(2,1,1)
+    plt.grid()
+    plt.plot(Y_quess)
+    plt.plot(Y_real)
+    plt.subplot(2,1,2)
+    plt.plot(U,'.')
+    plt.grid()
+    plt.show()
+
+
 def from_solution_to_x_u_y(solution,time_horizon):
     control_time=int((time_horizon-1)/holding_time)+1
     solution_x_u_y = solution[ 'x' ]  
@@ -58,3 +60,22 @@ def u_extended(U,horizont):
     for i in range (horizont):
         U_result[:,i]=U[int(i/holding_time)] 
     return U_result
+def get_init_state(init_U,simulator):
+    results_agg = []
+    inputs_agg = []
+    run_options_agg = []
+    encoder = get_encoder()
+    for i in range (30):
+        input_idx,run_options=init_U[i],input_sets[int(init_U[i])]
+        results = simulator.runForDay(run_options)
+        results_agg.append(results)
+        inputs_agg.append(input_idx)
+        run_options_agg.append(run_options)
+    hospitalized_agg=get_results(results_agg)
+    InputData=torch.Tensor(unorm(inputs_agg))
+    OutputData = torch.Tensor(ynorm(hospitalized_agg))
+    uhist = InputData[:30].unsqueeze(0).unsqueeze(2)
+    yhist = OutputData[:30].unsqueeze(0).unsqueeze(2)
+    x0 = encoder(uhist, yhist)
+    x = x0
+    return x0
