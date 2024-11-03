@@ -1,68 +1,52 @@
 from rolling_horizont import rolling_MPC
 from shrinking_horizont import shrinking_MPC
-from support import simulate
 import numpy as np
 from parameters import *
-def simualte_with_open_loop (noise,noise_MPC,MPC_type):
-    U_system=np.empty((total_time_horizont_extended))
-    Y_system=np.empty((total_time_horizont_extended))
-    
-    delta_time=holding_time
+from simulate import simulate_with_nerual_network,simualte_with_PanSim
+from support import get_init_state
+from torch_nets import get_encoder
+import pyPanSim as sp
+def open_loop_shr_neural(noise,noise_MPC,MPC_type,x0,disc):
     time_horizont=total_time_horizont_extended
-    x=x0
-    if MPC_type==shrinking_MPC:
-        x_init=np.zeros((17*time_horizont+int((time_horizont-1)/holding_time)+1,1))
-        for i in range(int(np.ceil(total_time_horizont_extended/delta_time))):
-                
-                if time_horizont>holding_time:
-                    [Y,U,X]=MPC_type(noise_MPC,time_horizont,x,grace_time,holding_time,x_init)
-                    
-                    x_init=X
-                    U_disc=np.round(U)
-                    U_disc[U_disc<0]=0
-                else:
-                    U=np.zeros(time_horizont)
-                    U_disc=U
-                if i==0:
-                    x=np.array([[-0.0089,  4.3177,  3.2526, -0.6230, -0.4863, -2.9737,  1.5976, -0.6301,
-                    0.9218,  3.0298, -2.0962,  1.4180, -3.7520,  3.4533, -1.0764,  0.0506]])
-                    [Y_sim,x_next]=simulate(U_disc[0:delta_time],x,noise)
-                else:
-                    [Y_sim,x_next]=simulate(U_disc[0:delta_time],x.T,noise)
-                x=x_next.T
-                U_system[i*delta_time:(i+1)*delta_time]=U_disc[0:delta_time]
-                Y_system[i*delta_time:(i+1)*delta_time]=Y_sim
-                time_horizont=time_horizont-delta_time
-        return [Y_system,U_system]
-    
-    if MPC_type==rolling_MPC:
-        x_init=np.zeros((17*rolling_horizont+int((rolling_horizont-1)/holding_time)+1,1))
-        for i in range(int(np.ceil(total_time_horizont_extended/delta_time))):
-            print(time_horizont,holding_time)
-            if time_horizont>2*holding_time:
-                
-                [Y,U,X]=MPC_type(noise_MPC, time_horizont, x, grace_time, holding_time, x_init)
-                x_init=X
-                U_disc=np.round(U)
-                U_disc[U_disc<0]=0
-            else:
-                U_disc[0:delta_time]=U[0:delta_time]
-                U_disc[delta_time:2*delta_time]=0
-                [Y_sim,x_next]=simulate(U_disc[0:delta_time*2],x.T,noise)
-                U_system[i*delta_time:(i+2)*delta_time]=U_disc[0:2*delta_time]
-                Y_system[i*delta_time:(i+2)*delta_time]=Y_sim
-                return [Y_system,U_system]         
-            if i==0:
-                x=np.array([[-0.0089,  4.3177,  3.2526, -0.6230, -0.4863, -2.9737,  1.5976, -0.6301,
-                0.9218,  3.0298, -2.0962,  1.4180, -3.7520,  3.4533, -1.0764,  0.0506]])
-                [Y_sim,x_next]=simulate(U_disc[0:delta_time],x,noise)
-            else:
-                [Y_sim,x_next]=simulate(U_disc[0:delta_time],x.T,noise)
-            x=x_next.T
-            U_system[i*delta_time:(i+1)*delta_time]=U_disc[0:delta_time]
-            Y_system[i*delta_time:(i+1)*delta_time]=Y_sim
-            time_horizont=time_horizont-delta_time
-        return [Y_system,U_system]
-
-        
-  
+    x_init=np.zeros((17*time_horizont+int((time_horizont-1)/holding_time)+1,1))
+    [Y,U,X]=MPC_type(noise_MPC,time_horizont,x0,grace_time,holding_time,x_init)
+    if disc==1:
+        U_calculated=np.round(U)
+        U_calculated[U_calculated<0]=0
+    else:
+        U_calculated=U
+               
+    [Y_sim,x_next]=simulate_with_nerual_network(U_calculated,x0.T,noise)
+    return [Y_sim,U,X]
+def open_loop_roll_neural(noise,noise_MPC,MPC_type,x0,disc):
+    time_horizont=total_time_horizont_extended
+    x_init=np.zeros((17*rolling_horizont+int((rolling_horizont-1)/holding_time)+1,1))
+    [Y,U,X]=MPC_type(noise_MPC,time_horizont,x0,grace_time,holding_time,x_init)
+    if disc==1:
+        U_calculated=np.round(U)
+        U_calculated[U_calculated<0]=0
+    else:
+        U_calculated=U
+               
+    [Y_sim,x_next]=simulate_with_nerual_network(U_calculated,x0.T,noise)
+    return [Y_sim,U,X]
+def open_loop_shr_PanSim(MPC_type,noise_MPC,U_init):
+    time_horizont=total_time_horizont_extended
+    simulator = sp.SimulatorInterface()
+    simulator.initSimulation(init_options)
+    encoder=get_encoder()
+    [x,U_pre,Y_pre]=get_init_state(simulator,U_init,encoder)
+    x_init=np.zeros((17*time_horizont+int((time_horizont-1)/holding_time)+1,1))
+    [Y,U,X]=open_loop_shr_neural(0,noise_MPC,MPC_type,x.T,1)
+    [New_Input,Y_real]=simualte_with_PanSim(simulator,U)
+    return [Y,Y_real,U]
+def open_loop_roll_PanSim(MPC_type,noise_MPC,U_init):
+    time_horizont=total_time_horizont_extended
+    simulator = sp.SimulatorInterface()
+    simulator.initSimulation(init_options)
+    encoder=get_encoder()
+    [x,U_pre,Y_pre]=get_init_state(simulator,U_init,encoder)
+    x_init=np.zeros((17*rolling_horizont+int((rolling_horizont-1)/holding_time)+1,1))
+    [Y,U,X]=open_loop_roll_neural(0,noise_MPC,MPC_type,x.T,1)
+    [New_Input,Y_real]=simualte_with_PanSim(simulator,U)
+    return [Y,Y_real,U]

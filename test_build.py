@@ -8,7 +8,12 @@ from closed_loop_simulation import close_loop_shr_PanSim
 from rolling_horizont import rolling_MPC
 from shrinking_horizont import shrinking_MPC
 from support import write_array_to_txt
-[Y_model,Y_real,U_system]=close_loop_shr_PanSim(shrinking_MPC,0)
+from open_loop_simulation import open_loop_shr_PanSim,open_loop_roll_PanSim
+import numpy as np
+U_init=np.zeros(30)
+[Y_model,Y_real,U_system]=open_loop_shr_PanSim(shrinking_MPC,1,U_init)
+#[Y_model,Y_real,U_system]=open_loop_roll_PanSim(rolling_MPC,1,U_init)
+# [Y_model,Y_real,U_system]=close_loop_shr_PanSim(shrinking_MPC,1)
 write_array_to_txt('pred.txt',Y_model)
 write_array_to_txt('real.txt',Y_real)
 write_array_to_txt('control.txt',U_system)

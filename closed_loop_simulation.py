@@ -70,13 +70,12 @@ def closed_loop_roll_neural(noise,noise_MPC,MPC_type,x0,disc):
     Y_system[2*-grace_time:]=Y_sim
     return [Y_system,U_system]
 
-def close_loop_shr_PanSim(MPC_type,noise_MPC):
+def close_loop_shr_PanSim(MPC_type,noise_MPC,U_init):
     U_system=np.empty((total_time_horizont_extended))
     Y_model=np.empty((total_time_horizont_extended))
     Y_real=np.empty((total_time_horizont_extended))
     Raw_InputData=np.empty((total_time_horizont_extended+30))
     Raw_OutputData=np.empty((total_time_horizont_extended+30))
-    U_init=np.zeros(30)
     delta_time=holding_time
     time_horizont=total_time_horizont_extended
     x_init=np.zeros((17*time_horizont+int((time_horizont-1)/holding_time)+1,1))

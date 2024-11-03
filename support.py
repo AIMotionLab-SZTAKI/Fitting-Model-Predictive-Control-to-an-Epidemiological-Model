@@ -2,7 +2,7 @@ from parameters import *
 import numpy as np
 import torch
 from torch_nets import get_net_models,system_step,get_encoder,unorm,ynorm,system_step
-
+import matplotlib.pyplot as plt
 
 def get_results(resultArray):
     nHospitalied = []
@@ -25,18 +25,29 @@ def visualize_simple(Y):
 def visualize_Y_vs_U(Y,U):
     plt.subplot(2,1,1)
     plt.grid()
-    plt.plot(Y)
+    plt.xlabel("Time [Days]")
+    plt.ylabel("Patients")
+    plt.plot(Y,label='Predicted process by the neural network')
+    plt.legend()
     plt.subplot(2,1,2)
-    plt.plot(U,'.')
     plt.grid()
+    plt.plot(U,'.')
+    plt.xlabel("Time [Days]")
+    plt.ylabel("Control input index")
     plt.show()
 def visualize_Y_quess_vs_Y_real(Y_quess,Y_real,U):
     plt.subplot(2,1,1)
     plt.grid()
-    plt.plot(Y_quess)
-    plt.plot(Y_real)
+    plt.xlabel("Time [Days]")
+    plt.ylabel("Patients")
+
+    plt.plot(Y_quess,label='Predicted process by the neural network')
+    plt.plot(Y_real,label='Real process by the PanSim')
+    plt.legend()
     plt.subplot(2,1,2)
     plt.plot(U,'.')
+    plt.xlabel("Time [Days]")
+    plt.ylabel("Control input index")
     plt.grid()
     plt.show()
 
@@ -60,6 +71,7 @@ def u_extended(U,horizont):
     for i in range (horizont):
         U_result[:,i]=U[int(i/holding_time)] 
     return U_result
+
 def get_init_state(simulator,U_init,encoder):
     results_agg = []
     inputs_agg = []
