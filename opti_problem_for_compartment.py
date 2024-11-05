@@ -1,6 +1,5 @@
 import casadi as cs
 import numpy as np
-from support import *
 from parameters_for_compartment import min_control_value, max_control_value, hospital_capacity,real_population 
 from comparment_model import dydt_casadi
 class Problem:

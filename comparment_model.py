@@ -5,18 +5,18 @@ import casadi as cs
 import numpy as np
 import matplotlib.pyplot as plt
 
-def dydt_numpy(t, y,u):
+def dydt_numpy(t, x,u):
    
                     #0->beta   #1->delta    #2->N          #3->alpha    #4->p    #5->q     #6->ro_1   #7->ro_a  #8->eta  #9->h    #10->mikro
     param=np.array([1/3 ,     0.75 ,       1,    1/2.5 ,      1/3 ,    0.6 ,      1/4 ,     1/4 ,     0.076 ,  1/10 ,    0.145])    
-    S = y[0]
-    L = y[1]
-    P = y[2]
-    I = y[3]
-    A = y[4]
-    H = y[5]
-    R = y[6]
-    D = y[7]
+    S = x[0]
+    L = x[1]
+    P = x[2]
+    I = x[3]
+    A = x[4]
+    H = x[5]
+    R = x[6]
+    D = x[7]
     dSdt = -param[0]*(1-u)*(P+I+A*param[1])*S/param[2]
     dLdt=param[0]*(1-u)*(P+I+A*param[1])*S/param[2]-param[3]*L
     dPdt=param[3]*L-param[4]*P
@@ -26,9 +26,9 @@ def dydt_numpy(t, y,u):
     dRdt=param[6]*(1-param[8])*I+param[7]*A+(1-param[10])*param[9]*H
     dDdt=param[10]*param[9]*H
     return [dSdt, dLdt,dPdt,dIdt,dAdt,dHdt,dRdt,dDdt]
-def dydt_casadi(t, y, u):
+def dydt_casadi(t, x, u):
     param = cs.MX([1/3, 0.75, 1, 1/2.5, 1/3, 0.6, 1/4, 1/4, 0.076, 1/10, 0.145])
-    S, L, P, I, A, H, R, D = y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]
+    S, L, P, I, A, H, R, D = x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]
 
     dSdt = -param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2]
     dLdt = param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2] - param[3] * L
@@ -41,21 +41,21 @@ def dydt_casadi(t, y, u):
     
     return cs.vertcat(dSdt, dLdt, dPdt, dIdt, dAdt, dHdt, dRdt, dDdt)
 
-def runge_kutta_4_step(y, u,dydt):
+def runge_kutta_4_step(x, u,dydt):
     t = 0
     dt = 1
-    k1 = dydt(t, y, u)
-    k2 = dydt(t + dt/2, y + (dt/2 * k1), u)
-    k3 = dydt(t + dt/2, y + (dt/2 * k2), u)
-    k4 = dydt(t + dt, y + (dt * k3), u)
+    k1 = dydt(t, x, u)
+    k2 = dydt(t + dt/2, x + (dt/2 * k1), u)
+    k3 = dydt(t + dt/2, x + (dt/2 * k2), u)
+    k4 = dydt(t + dt, x + (dt * k3), u)
     
     K = k1 + 2 * k2 + 2 * k3 + k4
-    res = y + (dt / 6) * K
+    res = x + (dt / 6) * K
     return res
 
 def real_system_step(u,t_span,y0,dydt):
     times=np.linspace(t_span[0],t_span[1],1000)
-    soln = solve_ivp(lambda t, y: dydt(t, y, u), t_span, y0, t_eval=times)
+    soln = solve_ivp(lambda t, x: dydt(t, x, u), t_span, y0, t_eval=times)
     return soln
 def real_model_simulation(u_values,dydt):
     
@@ -95,35 +95,34 @@ def visualize (x_opt,u_opt):
     u_opt=u_extended(u_opt,time_horizont)
     u_q=norm_round(u_opt)
     y_real=real_model_simulation(u_q,dydt_numpy)
-    plt.subplot(2,2,1)
     plt.grid()
-    plt.plot( y_real,color="k",linestyle="-",marker=".")
-    plt.plot( x_opt[5],color="m",linestyle="-",marker=".")
+    plt.plot( y_real,color="k",linestyle="-",marker="")
+    plt.plot( x_opt[5],color="m",linestyle="-",marker="")
     plt.legend(['The real system respond ','The predicted respond' ])
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
-    plt.subplot(2,2,2)
+    plt.show()
     plt.grid()
     plt.plot(u_q,color="r",linestyle="",marker=".")
     plt.plot(u_opt,color="b",linestyle="",marker=".")
     plt.legend(['Control signal with round','Control signal without round'])
     plt.xlabel("Time [days]")
     plt.ylabel("Control scenarios")
-    plt.subplot(2,2,3)
+    plt.show()
     plt.grid()
-    plt.plot(x_opt[0],color="b",linestyle="-",marker=".")
-    plt.plot(x_opt[6],color="g",linestyle="-",marker=".")
-    plt.subplot(2,2,4)
-    plt.grid()
+    plt.plot(x_opt[0],color="b",linestyle="-",marker="")
+    plt.plot(x_opt[6],color="g",linestyle="-",marker="")
     plt.legend(['Susceptibles','Recover'])
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
-    plt.plot(x_opt[1],color="b",linestyle="-",marker=".")
-    plt.plot(x_opt[2],color="g",linestyle="-",marker=".")
-    plt.plot(x_opt[3],color="r",linestyle="-",marker=".")
-    plt.plot(x_opt[4],color="c",linestyle="-",marker=".")
-    plt.plot(x_opt[5],color="m",linestyle="-",marker=".")
-    plt.plot(x_opt[7],color="k",linestyle="-",marker=".")
+    plt.show()
+    plt.grid()
+    plt.plot(x_opt[1],color="b",linestyle="-",marker="")
+    plt.plot(x_opt[2],color="g",linestyle="-",marker="")
+    plt.plot(x_opt[3],color="r",linestyle="-",marker="")
+    plt.plot(x_opt[4],color="c",linestyle="-",marker="")
+    plt.plot(x_opt[5],color="m",linestyle="-",marker="")
+    plt.plot(x_opt[7],color="k",linestyle="-",marker="")
     plt.legend(['Latent','Pre-symptomatic ','Symptomatic infected','Symptomatic infected but will recover','Hospital','Died'])
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
