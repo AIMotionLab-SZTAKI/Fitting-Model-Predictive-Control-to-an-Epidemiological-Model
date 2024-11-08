@@ -18,7 +18,7 @@ def open_loop_shr_neural(noise,noise_MPC,MPC_type,x0,disc):
         U_calculated=U
                
     [Y_sim,x_next]=simulate_with_nerual_network(U_calculated,x0.T,noise)
-    return [Y_sim,U,X]
+    return [Y_sim,U_calculated,X]
 def open_loop_roll_neural(noise,noise_MPC,MPC_type,x0,disc):
     time_horizont=total_time_horizont_extended
     grace_time=grace_time_extended
@@ -31,7 +31,7 @@ def open_loop_roll_neural(noise,noise_MPC,MPC_type,x0,disc):
         U_calculated=U
                
     [Y_sim,x_next]=simulate_with_nerual_network(U_calculated,x0.T,noise)
-    return [Y_sim,U,X]
+    return [Y_sim,U_calculated,X]
 # def open_loop_shr_PanSim(MPC_type,noise_MPC,U_init):
 #     time_horizont=total_time_horizont_extended
 #     simulator = sp.SimulatorInterface()

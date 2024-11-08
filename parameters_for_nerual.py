@@ -26,8 +26,8 @@ init_options = ['panSim', '-r', ' ', '--diags', '0', '--quarantinePolicy', '0', 
                 '--diseaseProgressionScaling', '0.94,1.03,0.813,0.72,0.57,0.463,0.45',
                 '--closures', 'inputConfigFiles/emptybbRules.json'
                 ]
-total_time_horizont = 50
-grace_time = 8
+total_time_horizont = 180
+grace_time = 40
 holding_time = 7
 if total_time_horizont%holding_time==0:
     total_time_horizont_extended=total_time_horizont
