@@ -1,4 +1,4 @@
-from opti_problem import *
+from opti_problem_for_neural import *
 from support import *
 
 def shrinking_MPC(noise,time_horizont,x,grace_time, holding_time,x_init) :

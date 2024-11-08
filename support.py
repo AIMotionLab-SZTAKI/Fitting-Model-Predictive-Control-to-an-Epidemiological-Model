@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_for_nerual import *
 import numpy as np
 import torch
 from torch_nets import get_net_models,system_step,get_encoder,unorm,ynorm,system_step

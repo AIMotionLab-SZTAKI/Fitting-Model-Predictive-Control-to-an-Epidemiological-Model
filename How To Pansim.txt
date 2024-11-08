@@ -1,0 +1,24 @@
+
+
+
+git clone --recursive https://github.com/khbence/pansim.git
+cd pansim
+
+git clone https://github.com/NVIDIA/thrust.git --recursive -b cuda-11.6
+python3 -m venv venv
+source venv/bin/activate
+pip install pybind11
+
+mkdir build
+cd build
+
+cmake .. -DUSE_GPU=OFF -DENABLE_PYTHON=ON -Dpybind11_DIR=/home/epres_tamas/pansim/venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11
+
+make -j2
+
+cp pyPanSim.*.so ../
+cd ..
+
+wget https://users.itk.ppke.hu/~regiszo/inputs.tgz
+tar xfv inputs.tgz
+rm inputs.tgz
