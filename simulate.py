@@ -24,11 +24,13 @@ def simulate_with_nerual_network(U,x0,noise_dec):
     return [Y,x_next]
 def simualte_with_PanSim(simulator,U):
     results_agg = []
+    inputs_agg=[]
     run_options_agg = []
     for i in range (len(U)):
         input_idx,run_options=U[i],input_sets[int(U[i])]
         results = simulator.runForDay(run_options)
         results_agg.append(results)
+        inputs_agg.append(input_idx)
         run_options_agg.append(run_options)
     hospitalized_agg=get_results(results_agg)
-    return hospitalized_agg
+    return [inputs_agg,hospitalized_agg]

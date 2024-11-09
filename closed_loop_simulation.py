@@ -1,5 +1,5 @@
 import numpy as np
-#import pyPanSim as sp
+import pyPanSim as sp
 from parameters_for_nerual import *
 from simulate import simulate_with_nerual_network,simualte_with_PanSim
 from support import *
@@ -98,6 +98,7 @@ def closed_loop_shr_PanSim(MPC_type,noise_MPC,U_init):
             time_horizont=time_horizont-delta_time
     return [Y_model,Y_real,U_system]
 def closed_loop_roll_PanSim(MPC_type,noise_MPC,U_init):
+        grace_time_step=grace_time_extended
         U_system=np.empty((total_time_horizont_extended))
         Y_model=np.empty((total_time_horizont_extended))
         Y_real=np.empty((total_time_horizont_extended))
@@ -105,13 +106,13 @@ def closed_loop_roll_PanSim(MPC_type,noise_MPC,U_init):
         Raw_OutputData=np.empty((total_time_horizont_extended+30))
         delta_time=holding_time
         time_horizont=total_time_horizont_extended
-        x_init=np.zeros((17*time_horizont+int((time_horizont-1)/holding_time)+1,1))
+        x_init=np.zeros((17*rolling_horizont+int((rolling_horizont-1)/holding_time)+1,1))
         simulator = sp.SimulatorInterface()
         simulator.initSimulation(init_options)
         encoder=get_encoder()
         [x,Raw_InputData[0:30],Raw_OutputData[0:30]]=get_init_state(simulator,U_init,encoder)
         for i in range(int(np.ceil(total_time_horizont_extended/delta_time))):
-            [Y,U,X]=MPC_type(noise_MPC,time_horizont,x,grace_time_step,holding_time,x_init)
+            [Y,U,X]=MPC_type(noise_MPC,time_horizont,x.T,grace_time_step,holding_time,x_init)
             x_init=X
             U_calculated=np.round(U)
             U_calculated[U_calculated<0]=0
