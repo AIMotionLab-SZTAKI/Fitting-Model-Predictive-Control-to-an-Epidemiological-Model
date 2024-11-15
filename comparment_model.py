@@ -57,7 +57,7 @@ def real_system_step(u,t_span,y0,dydt):
     times=np.linspace(t_span[0],t_span[1],1000)
     soln = solve_ivp(lambda t, x: dydt(t, x, u), t_span, y0, t_eval=times)
     return soln
-def real_model_simulation(u_values,dydt):
+def real_model_simulation(u_values,dydt,time_horizont):
     
     real_system=[]
     t0_step=0
@@ -94,11 +94,11 @@ def u_extended(U,horizont):
 def visualize (x_opt,u_opt):
     u_opt=u_extended(u_opt,time_horizont)
     u_q=norm_round(u_opt)
-    y_real=real_model_simulation(u_q,dydt_numpy)
+    y_real=real_model_simulation(u_q,dydt_numpy,time_horizont)
     plt.grid()
     plt.plot( y_real,color="k",linestyle="-",marker="")
-    plt.plot( x_opt[5],color="m",linestyle="-",marker="")
-    plt.legend(['The real system respond ','The predicted respond' ])
+    plt.plot( x_opt[5],color="p",linestyle="-",marker="")
+    plt.legend(['The real system respond ', 'The predicted respond'])
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
     plt.show()
@@ -124,6 +124,13 @@ def visualize (x_opt,u_opt):
     plt.plot(x_opt[5],color="m",linestyle="-",marker="")
     plt.plot(x_opt[7],color="k",linestyle="-",marker="")
     plt.legend(['Latent','Pre-symptomatic ','Symptomatic infected','Symptomatic infected but will recover','Hospital','Died'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+def visualize_the_system(Y):
+    plt.grid()
+    plt.plot(Y,color="m",linestyle="-",marker="")
+    plt.legend(['The real system respond '])
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
     plt.show()
