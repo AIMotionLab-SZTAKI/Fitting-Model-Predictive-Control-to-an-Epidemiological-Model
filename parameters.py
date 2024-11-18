@@ -1,4 +1,4 @@
-import casadi as cs
+import numpy as np
 input_sets = [["TPdef", "PLNONE", "CFNONE", "SONONE", "QU0", "MA1.0"],
               ["TPdef", "PL0", "CFNONE", "SONONE", "QU0", "MA1.0"],
               ["TPdef", "PLNONE", "CF2000-0500", "SONONE", "QU0", "MA1.0"],
@@ -26,15 +26,23 @@ init_options = ['panSim', '-r', ' ', '--diags', '0', '--quarantinePolicy', '0', 
                 '--diseaseProgressionScaling', '0.94,1.03,0.813,0.72,0.57,0.463,0.45',
                 '--closures', 'inputConfigFiles/emptybbRules.json'
                 ]
-debug = 0
-total_time_horizont = 180
-grace_time = 40
+total_time_horizont = 100
+grace_time = 14
 holding_time = 7
 if total_time_horizont%holding_time==0:
     total_time_horizont_extended=total_time_horizont
 else:
     total_time_horizont_extended=total_time_horizont-(total_time_horizont%holding_time)
-hospital_capacity = 200
+if grace_time%holding_time==0:
+    grace_time_extended=grace_time
+else:
+    grace_time_extended=grace_time+(holding_time-(grace_time%holding_time))
+rolling_horizont=total_time_horizont_extended
+
 min_control_value = 0
-max_control_value = 17 
-rolling_horizont=(total_time_horizont_extended-grace_time)-((total_time_horizont_extended-grace_time)%holding_time)
+max_control_value = 17
+max_control=18 
+real_population=9800000
+real_latent=10
+dt=1
+hospital_capacity = 200

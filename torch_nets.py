@@ -7,7 +7,6 @@ y0 = torch.load("norm/y0.pt")
 ystd = torch.load("norm/ystd.pt")
 u0 = torch.load("norm/u0.pt")
 ustd = torch.load("norm/ustd.pt")
-
 # functions for normalization and denormalization input-output
 unorm = lambda u: (u - u0) / ustd  # Normalizálás a bemenetre
 ynorm = lambda y: (y - y0) / ystd  # Normalizálás a kimenetre
@@ -75,12 +74,16 @@ class casadi_res_net:
             output += nonlin_output
         return output
 
-def system_step(casadi_model_f,casadi_model_h,input_state,input_control):
+def system_step_neural(casadi_net_f,input_state,input_control):
     input_control=unorm(input_control)
-    real_output=ydenorm(casadi_model_h(input_state))
     concatenated_input = cs.horzcat(input_state, input_control)
-    next_state = casadi_model_f(concatenated_input)  
-    return [next_state,real_output]
+    next_state = casadi_net_f(concatenated_input)  
+    return next_state
+
+def output_mapping_neural(casadi_net_h,input_state):
+    input_control=unorm(input_state)
+    real_output=ydenorm(casadi_net_h(input_state))
+    return real_output
 
 def get_net_models():
     f = default_state_net(nu = 1, nx = 16)

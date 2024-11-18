@@ -1,7 +1,8 @@
-from parameters_for_nerual import *
+from parameters import *
 import numpy as np
+import casadi as cs
 import torch
-from torch_nets import *
+from torch_nets import unorm,ynorm
 import matplotlib.pyplot as plt
 
 def get_results(resultArray):
@@ -52,16 +53,17 @@ def visualize_Y_quess_vs_Y_real(Y_quess,Y_real,U):
     plt.show()
 
 
-def from_solution_to_x_u_y(solution,time_horizon):
-    control_time=int((time_horizon-1)/holding_time)+1
+def from_solution_to_x_u_y(solution,time_horizon,dim):
+    control_time=int(np.ceil(time_horizon/holding_time))
     solution_x_u_y = solution[ 'x' ]  
-    x_opt = solution_x_u_y[ :16*time_horizon].reshape(( 16, time_horizon ))  
-    u_opt = solution_x_u_y[ 16*time_horizon:16*time_horizon + control_time ].reshape(( 1, control_time ))   
-    y_opt = solution_x_u_y[ 16*time_horizon+control_time: ].reshape((1, time_horizon))
+    x_opt = solution_x_u_y[ :dim*time_horizon].reshape(( dim, time_horizon ))  
+    u_opt = solution_x_u_y[ dim*time_horizon:dim*time_horizon + control_time ].reshape(( 1, control_time ))   
+    y_opt = solution_x_u_y[ dim*time_horizon+control_time: ].reshape((1, time_horizon))
     return [x_opt,u_opt,y_opt]
-def from_x_u_y_to_solution(x_opt,u_opt,y_opt,time_horizon):
-    control_time=int((time_horizon-1)/holding_time)+1
-    x_faltten=cs.reshape(x_opt,time_horizon*16,1)
+
+def from_x_u_y_to_solution(x_opt,u_opt,y_opt,time_horizon,dim):
+    control_time=int(np.ceil(time_horizon/holding_time))
+    x_faltten=cs.reshape(x_opt,time_horizon*dim,1)
     u_faltten=cs.reshape(u_opt,control_time,1)
     y_faltten=cs.reshape(y_opt,time_horizon,1)
     result=cs.vertcat(x_faltten,u_faltten,y_faltten)
@@ -93,3 +95,47 @@ def norm_and_unsqueeze(inputs_agg,hospitalized_agg):
     uhist = InputData[:30].unsqueeze(0).unsqueeze(2)
     yhist = OutputData[:30].unsqueeze(0).unsqueeze(2)
     return [uhist,yhist]
+def norm_round(vector):
+    max=np.max(vector)
+    return np.round((vector/max)*max_control)/(max_control/max)
+def visualize_comapartmental (x_opt,u_opt,y_real):
+    u_q=norm_round(u_opt)
+    plt.grid()
+    plt.plot( y_real,color="k",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
+    plt.legend(['The real system respond ', 'The predicted respond'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze(u_q),color="r",linestyle="",marker=".")
+    plt.plot(np.squeeze(u_opt),color="b",linestyle="",marker=".")
+    plt.legend(['Control signal with round','Control signal without round'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Control scenarios")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze (x_opt[0,:]),color="b",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[6,:]),color="g",linestyle="-",marker="")
+    plt.legend(['Susceptibles','Recover'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze (x_opt[1,:]),color="b",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[2,:]),color="g",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[3,:]),color="r",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[4,:]),color="c",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[7,:]),color="k",linestyle="-",marker="")
+    plt.legend(['Latent','Pre-symptomatic ','Symptomatic infected','Symptomatic infected but will recover','Hospital','Died'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+def visualize_the_system_comaprtmental(Y):
+    plt.grid()
+    plt.plot(Y,color="m",linestyle="-",marker="")
+    plt.legend(['The real system respond '])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
