@@ -27,7 +27,7 @@ class Plant(Model):
             y_out= self.map(x)
             x=x_next
             if noise==1 :
-                noise = np.random.rand() * 0.025
+                noise = np.random.rand() * 0.05
                 x=x_next+noise
             else:
                 x=x_next
@@ -36,11 +36,12 @@ class Plant(Model):
         Y = np.array(Y)
         return [Y,x_next]
 class PanSim:
-    def __init__(self,simualtor,encoder):
-        self.simualtor=simualtor
+    def __init__(self,simulator,encoder):
+        self.simulator=simulator
+        self.simulator.initSimulation(init_options)
         self.encoder=encoder
-        self.Input=None
-        self.Output=None
+        self.Input=np.zeros(30)
+        self.Output=np.zeros(30)
     def get_initial_state(self,U_init):
         results_agg = []
         inputs_agg = []
@@ -54,10 +55,9 @@ class PanSim:
         hospitalized_agg=get_results(results_agg)
         [uhist,yhist]=norm_and_unsqueeze(inputs_agg,hospitalized_agg)
         x0 = self.encoder(uhist, yhist)
-        x = x0
         self.Input=inputs_agg
         self.Output=hospitalized_agg
-        return [x0.detach().numpy()]
+        return x0.detach().numpy()
     def response(self,U,delta_time):
         results_agg = []
         inputs_agg = []
@@ -69,11 +69,15 @@ class PanSim:
             inputs_agg.append(input_idx)
             run_options_agg.append(run_options)
         hospitalized_agg=get_results(results_agg)
-        self.Input[-delta_time:]=inputs_agg
-        self.Output[-delta_time:]=hospitalized_agg
+        self.Input = np.roll(self.Input, -delta_time)
+        self.Input[-delta_time:] = inputs_agg
+
+        self.Output = np.roll(self.Output, -delta_time)
+        self.Output[-delta_time:] = hospitalized_agg
         return hospitalized_agg
     def get_next_state(self):
         [uhist,yhist]=norm_and_unsqueeze(self.Input,self.Output)
         x0 = self.encoder(uhist, yhist)
+        x0=x0.detach().numpy()
         return x0
     
