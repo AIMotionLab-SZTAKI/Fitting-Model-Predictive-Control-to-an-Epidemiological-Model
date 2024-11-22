@@ -20,16 +20,18 @@ class Model:
 class Plant(Model):
     def __init__( self, dimension, dynamic_for_one_step, output_mapping):
         super().__init__( dimension, dynamic_for_one_step, output_mapping)
-    def response(self,U,x,noise):
+    def response(self,U,x,noise_dec):
         Y=[]
         for i in range(len(U)):
             x_next = self.dynamic( x, U[i])
             y_out= self.map(x)
             x=x_next
-            if noise==1 :
-                noise = np.random.rand() * 0.05
+            if noise_dec==1 :
+                
+                noise = np.random.rand() * 0.025
                 x=x_next+noise
             else:
+               
                 x=x_next
             Y.append(np.squeeze(y_out))   
 
