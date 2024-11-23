@@ -139,3 +139,10 @@ def visualize_the_system_comaprtmental(Y):
     plt.xlabel("Time [days]")
     plt.ylabel("Cardinality of the set [sample]")
     plt.show()
+def visualize_execution_time (time_vector):
+    plt.grid()
+    plt.plot(time_vector,color="b",linestyle="",marker=".")
+    plt.legend(['Execution time '])
+    plt.xlabel("Number of the run")
+    plt.ylabel("Time [s]")
+    plt.show()

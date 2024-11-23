@@ -2,7 +2,7 @@ import casadi as cs
 import numpy as np
 from support import *
 from parameters import min_control_value, max_control_value, hospital_capacity
-
+import time
 
 
 class Problem:
@@ -15,6 +15,7 @@ class Problem:
         self.objective = objective_function( self.u )
         self.system_step = Model.dynamic
         self.mapping=Model.map
+        self.time=0
         constraints_for_step_state = [ ]
         constraints_for_output = [ ]
         constraints_for_step_state.append( self.x[:, 0] - x0 )
@@ -67,12 +68,15 @@ class Problem:
         
     def add_noise (self,time_horizont):
         for i in range ((self.dim+1)*time_horizont):
-            noise = np.random.rand() * 0.025
+            noise = np.random.rand() * 0.2
             self.nlp['g'][i]=self.nlp['g'][i]-noise
 
     def get_soultion( self, solver_type, x_init ):
         solver = cs.nlpsol( 'solver', solver_type, self.nlp )
+        start_time = time.time()
         solution = solver( lbg = self.floor_constraints, ubg = self.ceilloing_constraints,x0 = x_init )  
+        end_time = time.time()
+        self.time=end_time - start_time
         return solution
 class Problem_With_Grace_time(Problem):
       def __init__( self,  x0, time_horizont, grace_time, holding_time, objective_function, model ):

@@ -26,8 +26,8 @@ init_options = ['panSim', '-r', ' ', '--diags', '0', '--quarantinePolicy', '0', 
                 '--diseaseProgressionScaling', '0.94,1.03,0.813,0.72,0.57,0.463,0.45',
                 '--closures', 'inputConfigFiles/emptybbRules.json'
                 ]
-total_time_horizont = 180+40
-grace_time = 40
+total_time_horizont = 49
+grace_time = 14
 holding_time = 7
 if total_time_horizont%holding_time==0:
     total_time_horizont_extended=total_time_horizont
@@ -45,4 +45,5 @@ max_control=18
 real_population=9800000
 real_latent=10
 dt=1
-hospital_capacity = 200
+hospital_capacity = 190
+x_max=np.array([[0.681464, 1.27099, -0.256376, -0.00371542, 0.121065, 0.0974737, 0.169899, -0.195605, -0.525731, 0.636617, -0.48568, 0.419064, -0.910506, 0.0928017, 0.169059, -0.124326]])
