@@ -6,22 +6,26 @@ import time
 
 
 class Problem:
-    def __init__( self, x0, time_horizont, holding_time, objective_function, Model ):
+    def __init__( self, x0, time_horizont, holding_time, Model ):
         self.control_time=int(np.ceil(time_horizont/holding_time))
         self.dim=Model.dim
         self.x = cs.MX.sym( 'x', self.dim,time_horizont )
         self.u = cs.MX.sym( 'u', 1,self.control_time )
         self.y = cs.MX.sym( 'y', 1,time_horizont )
-        self.objective = objective_function( self.u )
+        
         self.system_step = Model.dynamic
         self.mapping=Model.map
-        self.time=0
         constraints_for_step_state = [ ]
         constraints_for_output = [ ]
         constraints_for_step_state.append( self.x[:, 0] - x0 )
+        penalty_weight = 1e3  
+        penalty_power = 3     
+        self.time=0
         
-    
-      
+        penalty = penalty_weight * cs.sumsqr(cs.fmax(self.y - hospital_capacity, 0)**penalty_power)
+
+        
+        self.objective = cs.sumsqr(self.u) + penalty
         for i in range( time_horizont ):
             if i == time_horizont - 1:
                 x_next = self.system_step( self.x[ :, i ].T, self.u[ :, int(i/holding_time) ].T ) 
@@ -60,7 +64,7 @@ class Problem:
                 
                 else:
                     lbg[ i ] = 0
-                    ubg[ i ] = hospital_capacity
+                    ubg[ i ] = hospital_capacity+margin
 
         self.nlp = nlp
         self.floor_constraints = lbg
@@ -68,19 +72,20 @@ class Problem:
         
     def add_noise (self,time_horizont):
         for i in range ((self.dim+1)*time_horizont):
-            noise = np.random.rand() * 0.2
+            noise = np.random.rand() * 0.025
             self.nlp['g'][i]=self.nlp['g'][i]-noise
 
     def get_soultion( self, solver_type, x_init ):
         solver = cs.nlpsol( 'solver', solver_type, self.nlp )
-        start_time = time.time()
-        solution = solver( lbg = self.floor_constraints, ubg = self.ceilloing_constraints,x0 = x_init )  
-        end_time = time.time()
-        self.time=end_time - start_time
+        start=time.time()
+        solution = solver( lbg = self.floor_constraints, ubg = self.ceilloing_constraints,x0 = x_init ) 
+        end=time.time()
+        self.time=end-start
+        print(solver.stats()['return_status'])
         return solution
 class Problem_With_Grace_time(Problem):
-      def __init__( self,  x0, time_horizont, grace_time, holding_time, objective_function, model ):
-        super().__init__(  x0, time_horizont, holding_time, objective_function, model )
+      def __init__( self,  x0, time_horizont, grace_time, holding_time, model ):
+        super().__init__(  x0, time_horizont, holding_time, model )
 
         for i in range ( self.control_time ):
             if i < self.control_time - np.ceil(grace_time/holding_time):
