@@ -58,4 +58,23 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
     grace_time_extended, comparmental_model, comparmental_plant, 1
 )
 ```
+### Test in Section 6,4
+- **Model:** SUBNET description  
+- **Plant:** PanSim  
+- **The intervention signal is rounded**  
+
+#### Code Implementation  
+```python
+pansim=PanSim(simulator,encoder)
+subnet=Modell(16,system_step_neural,output_mapping_neural)
+
+[Y_real, Y_model, U, X, time] = shrinking_MPC(
+    0, 1, total_time_horizont_extended, x0, 
+    grace_time_extended, subnet, pansim, 1
+)
+[Y_real, Y_model, U, X, time] = rolling_MPC(
+    0, 1, total_time_horizont_extended,119, x0, 
+    grace_time_extended, pansim, pansim, 1
+)
+```
 
