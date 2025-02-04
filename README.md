@@ -9,3 +9,8 @@ After the appropriate parameters and classes have been instantiated, a strategy 
 This subsection presents the class instantiations and function calls used in the implementation of each test case.  
 
 
+### Scenario 1  
+**Test in Section 3.2.2**  
+- **Model:** Compartmental description  
+- **Phase:** Compartmental model without noise  
+- **The intervention signal is not rounded**  
