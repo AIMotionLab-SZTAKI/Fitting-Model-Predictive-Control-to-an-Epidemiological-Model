@@ -9,8 +9,18 @@ After the appropriate parameters and classes have been instantiated, a strategy 
 This subsection presents the class instantiations and function calls used in the implementation of each test case.  
 
 
-### Scenario 1  
-**Test in Section 3.2.2**  
+### Comparmental modell's tests 
+**Test Scenario 1 in Section 3.2.2**  
 - **Model:** Compartmental description  
 - **Phase:** Compartmental model without noise  
-- **The input signal is not rounded**  
+- **The intervention signal is not rounded**  
+
+#### Code Implementation  
+```python
+comparmental_plant = Plant(8, runge_kutta_4_step, compartmental_model_mapping)
+comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
+
+[Y_real, Y_model, U, X, time] = shrinking_MPC(
+    0, 0, total_time_horizont_extended, x0_comparmental, 
+    grace_time_extended, comparmental_model, comparmental_plant, 0
+)
