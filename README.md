@@ -11,7 +11,7 @@ This subsection presents the class instantiations and function calls used in the
 
 ### Test Scenario 1 in Section 3.2.2
 - **Model:** Compartmental description  
-- **Phase:** Compartmental model without noise  
+- **Plant:** Compartmental model without noise  
 - **The intervention signal is not rounded**  
 
 #### Code Implementation  
@@ -26,7 +26,7 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 ```
 ### Test Scenario 2 in Section 3.2.2
 - **Model:** Compartmental description  
-- **Phase:** Compartmental model without noise  
+- **Plant:** Compartmental model without noise  
 - **The intervention signal is rounded**  
 
 #### Code Implementation  
@@ -41,7 +41,7 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 ```
 ### Test in Section 3.3.3
 - **Model:** Compartmental description  
-- **Phase:** Compartmental model with noise  
+- **Plant:** Compartmental model with noise  
 - **The intervention signal is rounded**  
 
 #### Code Implementation  
@@ -51,6 +51,10 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 
 [Y_real, Y_model, U, X, time] = shrinking_MPC(
     0, 1, total_time_horizont_extended, x0_comparmental, 
+    grace_time_extended, comparmental_model, comparmental_plant, 1
+)
+[Y_real, Y_model, U, X, time] = rolling_MPC(
+    0, 1, total_time_horizont_extended,119, x0_comparmental, 
     grace_time_extended, comparmental_model, comparmental_plant, 1
 )
 ```
