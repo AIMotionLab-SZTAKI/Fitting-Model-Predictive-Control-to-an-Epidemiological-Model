@@ -39,5 +39,19 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
     grace_time_extended, comparmental_model, comparmental_plant, 1
 )
 ```
+### Test in Section 3.3.3
+- **Model:** Compartmental description  
+- **Phase:** Compartmental model with noise  
+- **The intervention signal is rounded**  
 
+#### Code Implementation  
+```python
+comparmental_plant = Plant(8, runge_kutta_4_step, compartmental_model_mapping)
+comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
+
+[Y_real, Y_model, U, X, time] = shrinking_MPC(
+    0, 1, total_time_horizont_extended, x0_comparmental, 
+    grace_time_extended, comparmental_model, comparmental_plant, 1
+)
+```
 
