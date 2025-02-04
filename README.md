@@ -18,7 +18,7 @@ The constructor of the `PanSim` class is defined as follows:
 ```python
 def __init__(self,simulator,encoder):
 ```
-- **simulator:** The PanSim simualtor.
+- **simulator:** The instance of the PanSim simulator.
 - **encoder:** The SUBNET's encoder network.
 
 After the appropriate parameters and classes have been instantiated, a strategy can be applied using the `shrinking_MPC` and `rolling_MPC` functions.  
@@ -37,7 +37,7 @@ def rolling_MPC(noise_MPC, noise_plant, time_horizon, rolling_horizon, x, grace_
 - **plant:** The instantiated of the `Plant` class.
 - **discr:** Determines whether the control input is rounded.
 
-Note: TAn instance of the `Pansim` class can also be used to describe the plant.
+Note: The instance of the `Pansim` class can also be used to describe the plant.
 
 ## Tests and examples
 
