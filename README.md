@@ -58,7 +58,7 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
     grace_time_extended, comparmental_model, comparmental_plant, 1
 )
 ```
-### Test in Section 6,4
+### Test in Section 6.4
 - **Model:** SUBNET description  
 - **Plant:** PanSim  
 - **The intervention signal is rounded**  
