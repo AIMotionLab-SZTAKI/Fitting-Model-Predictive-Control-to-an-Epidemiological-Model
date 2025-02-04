@@ -45,9 +45,9 @@ This subsection presents the class instantiations and function calls used in the
 
 
 ### Test Scenario 1 in Section 3.2.2
-- **Model:** Compartmental description  
-- **Plant:** Compartmental model without noise  
-- **The intervention signal is not rounded**  
+- **Model:** Compartmental description.  
+- **Plant:** Compartmental model without noise.  
+- **The intervention signal is not rounded.**  
 
 #### Code Implementation  
 ```python
@@ -60,9 +60,9 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 )
 ```
 ### Test Scenario 2 in Section 3.2.2
-- **Model:** Compartmental description  
-- **Plant:** Compartmental model without noise  
-- **The intervention signal is rounded**  
+- **Model:** Compartmental description.  
+- **Plant:** Compartmental model without noise.  
+- **The intervention signal is rounded.**  
 
 #### Code Implementation  
 ```python
@@ -75,9 +75,9 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 )
 ```
 ### Test in Section 3.3.3
-- **Model:** Compartmental description  
-- **Plant:** Compartmental model with noise  
-- **The intervention signal is rounded**  
+- **Model:** Compartmental description.  
+- **Plant:** Compartmental model with noise.  
+- **The intervention signal is rounded.**  
 
 #### Code Implementation  
 ```python
@@ -94,9 +94,9 @@ comparmental_model = Model(8, runge_kutta_4_step, compartmental_model_mapping)
 )
 ```
 ### Test in Section 6.4
-- **Model:** SUBNET description  
-- **Plant:** PanSim  
-- **The intervention signal is rounded**  
+- **Model:** SUBNET model.  
+- **Plant:** PanSim simulator.
+- **The intervention signal is rounded.**  
 
 #### Code Implementation  
 ```python
