@@ -41,7 +41,7 @@ Note: The instance of the `Pansim` class can also be used to describe the plant.
 
 ## Tests and examples
 
-This subsection presents the class instantiations and function calls used in the implementation of each test case.  
+This subsection presents the class instantiations and function calls used in the implementation of each test case in the Thesis.  
 
 
 ### Test Scenario 1 in Section 3.2.2
