@@ -11,9 +11,33 @@ def __init__(self, dimension, dynamic_for_one_step, output_mapping):
 - **dynamic_for_one_step:** The stepping function responsible for the model dynamics.
 - **output_mapping:** The function that generates the output from the current state vector.
 
+The constructor of the `Model` class is the same as the `Model` class constructor.
 
+The constructor of the `PanSim` class is defined as follows:  
+
+```python
+def __init__(self,simulator,encoder):
+```
+- **simulator:** The PanSim simualtor.
+- **encoder:** The SUBNET's encoder network.
 
 After the appropriate parameters and classes have been instantiated, a strategy can be applied using the `shrinking_MPC` and `rolling_MPC` functions.  
+
+```python
+def shrinking_MPC(noise_MPC, noise_plant, time_horizon, x, grace_time, model, plant, discr):
+def rolling_MPC(noise_MPC, noise_plant, time_horizon, rolling_horizon, x, grace_time, model, plant, discr):
+```
+- **noise_MPC:** Determines whether noise is added to the model.
+- **noise_plant:** Determines whether noise is added to the plant.
+- **time_horizont:** The time horizon of the control. The control ends when the system reaches this point.
+- **x:** The initial state vector.
+- **rolling_horizont:** The time interval over which `rolling_MPC` calculates the model's response.
+- **grace_time:** The time interval during which a zero control input is applied from the end of the time horizont.
+-  **model:** The instantiated of the `Model` class.
+- **plant:** The instantiated of the `Plant` class.
+- **discr:** Determines whether the control input is rounded.
+
+Note: TAn instance of the `Pansim` class can also be used to describe the plant.
 
 ## Tests and examples
 
