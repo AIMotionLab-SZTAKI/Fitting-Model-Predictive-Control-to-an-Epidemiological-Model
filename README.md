@@ -11,7 +11,7 @@ def __init__(self, dimension, dynamic_for_one_step, output_mapping):
 - **dynamic_for_one_step:** The stepping function responsible for the model dynamics.
 - **output_mapping:** The function that generates the output from the current state vector.
 
-The constructor of the `Model` class is the same as the `Model` class constructor.
+The constructor of the `Plant` class is the same as the `Model` class constructor.
 
 The constructor of the `PanSim` class is defined as follows:  
 
