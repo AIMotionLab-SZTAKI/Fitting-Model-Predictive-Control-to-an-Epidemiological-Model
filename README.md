@@ -112,9 +112,6 @@ subnet=Modell(16,system_step_neural,output_mapping_neural)
     grace_time_extended, pansim, pansim, 1
 )
 ```
-# Structure of the code
-In this chapter, the functions of the individual `.py` files in the project are presented.
-## `comparmetnal_model.py`
-This `.py` file is responsible for describing the compartmental model. It contains the step function that defines the dynamics of the compartmental model, as well as the function that maps the given state vector to the corresponding output.
+
 
 
