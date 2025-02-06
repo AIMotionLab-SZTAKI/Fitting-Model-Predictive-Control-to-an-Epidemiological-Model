@@ -8,7 +8,7 @@ def dydt_numpy(t, x, u):
     # Az állapotváltozók kibontása a bemeneti vektorból
     S, L, P, I, A, H, R, D = x
     
-    # Az egyes egyenletek a dinamikai modellből
+    # A járvány dinamikája
     dSdt = -param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2]
     dLdt = param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2] - param[3] * L
     dPdt = param[3] * L - param[4] * P
@@ -27,7 +27,7 @@ def dydt_casadi(t, x, u):
     # Az állapotváltozók külön-külön történő kibontása
     S, L, P, I, A, H, R, D = x
     
-    # Az egyenletek Casadi szintaxis szerint
+    # A járvány dinamikája
     dSdt = -param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2]
     dLdt = param[0] * (1 - u) * (P + I + A * param[1]) * S / param[2] - param[3] * L
     dPdt = param[3] * L - param[4] * P
@@ -40,7 +40,7 @@ def dydt_casadi(t, x, u):
     return cs.vertcat(dSdt, dLdt, dPdt, dIdt, dAdt, dHdt, dRdt, dDdt).T
 
 def runge_kutta_4_step(dydt, x, u, dt=1):
-    # Kezdeti időpont (itt nem játszik szerepet, mert az egyenletek nem explicit időfüggők)
+    # Kezdeti időpont 
     t = 0
     
     # Runge-Kutta 4. rendű lépései
