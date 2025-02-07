@@ -43,7 +43,7 @@ The return values:
 - **Y_model:** The model's response during the control.
 - **U**: The applied control input
 - **X**: The model's state vectors during the control.
-- **time**: The reqired time to solve the optimization problem.
+- **time**: The reqired time to solve the optimization problems during the control.
 
 Note: The instance of the `Pansim` class can also be used to describe the plant.
 
