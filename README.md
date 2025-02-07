@@ -24,8 +24,8 @@ def __init__(self,simulator,encoder):
 After the appropriate parameters and classes have been instantiated, a strategy can be applied using the `shrinking_MPC` and `rolling_MPC` functions.  
 
 ```python
-def shrinking_MPC(noise_MPC, noise_plant, time_horizon, x, grace_time, model, plant, discr):
-def rolling_MPC(noise_MPC, noise_plant, time_horizon, rolling_horizon, x, grace_time, model, plant, discr):
+[Y_real,Y_model,U,X,time]=shrinking_MPC(noise_MPC, noise_plant, time_horizon, x, grace_time, model, plant, discr)
+[Y_real,Y_model,U,X,time]=rolling_MPC(noise_MPC, noise_plant, time_horizon, rolling_horizon, x, grace_time, model, plant, discr)
 ```
 - **noise_MPC:** Determines whether noise is added to the model.
 - **noise_plant:** Determines whether noise is added to the plant.
@@ -36,6 +36,12 @@ def rolling_MPC(noise_MPC, noise_plant, time_horizon, rolling_horizon, x, grace_
 -  **model:** The instantiated of the `Model` class.
 - **plant:** The instantiated of the `Plant` class.
 - **discr:** Determines whether the control input is rounded.
+  The return values:
+- **Y_real:** The plant's response during the control.
+- **Y_model:** The model's response during the control.
+- **U**: The applied control input
+- **X**: The model's state vectors during the control.
+- **time**: The reqired time to solve the optimization problem.
 
 Note: The instance of the `Pansim` class can also be used to describe the plant.
 
