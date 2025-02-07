@@ -4,7 +4,7 @@ import casadi as cs
 import torch
 from torch_nets import unorm,ynorm
 import matplotlib.pyplot as plt
-
+# A PanSim simulátor által visza adott vektort értelmezzük, és kiszedjük azokat az információkat, melyeket a rendszer válaszának tekintünk.
 def get_results(resultArray):
     nHospitalied = []
     for result in resultArray:
@@ -12,13 +12,46 @@ def get_results(resultArray):
         nHospitalied.append(hosp)
     return nHospitalied
 
-
+# .txt fájlba mentő és betöltő függvények
 def write_array_to_txt(name,array_input):
     np.savetxt(name,array_input)    
 
 def read_array_from_txt(name):
     array_loaded=np.loadtxt(name)
     return array_loaded
+
+#MEgejelenítésésrt felelős függvények
+def visualize_comapartmental (x_opt,u_opt):
+    plt.grid()
+    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
+    plt.xlabel("Time [days]")
+    plt.ylabel("Hospitalized people")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze(u_opt),color="b",linestyle="",marker=".")
+    plt.legend(['Control signal without rounding'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Control scenarios")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze (x_opt[0,:]),color="b",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[6,:]),color="g",linestyle="-",marker="")
+    plt.legend(['Susceptibles','Recover'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+    plt.grid()
+    plt.plot(np.squeeze (x_opt[1,:]),color="b",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[2,:]),color="g",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[3,:]),color="r",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[4,:]),color="c",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
+    plt.plot(np.squeeze (x_opt[7,:]),color="k",linestyle="-",marker="")
+    plt.legend(['Latent','Pre-symptomatic ','Symptomatic infected','Symptomatic infected but will recover','Hospital','Died'])
+    plt.xlabel("Time [days]")
+    plt.ylabel("Cardinality of the set [sample]")
+    plt.show()
+
 def visualize_simple(Y):
     plt.plot(Y)
     plt.grid()
@@ -56,7 +89,24 @@ def visualize_Y_quess_vs_Y_real(Y_quess,Y_real,U):
     plt.grid()
     plt.show()
 
+def visualize_execution_time (time_vector):
+    plt.grid()
+    plt.plot(time_vector,color="b",linestyle="",marker=".")
+    plt.legend(['Execution time '])
+    plt.xlabel("Number of the run")
+    plt.ylabel("Time [s]")
+    plt.show()
+    
+def visualize_error(error):
+    plt.grid()
+    plt.plot(np.abs(error),color="b",linestyle="",marker=".")
+    plt.legend(['Error'])
+    plt.xlabel("th week the rror beetwn the encoder and the stepper and maping networks")
+    plt.ylabel("Time [th week]")
+    plt.show()
 
+
+# A kapott megoldást szedi szét külöböző tömbökbe
 def from_solution_to_x_u_y(solution,time_horizon,dim):
     control_time=int(np.ceil(time_horizon/holding_time))
     solution_x_u_y = solution[ 'x' ]  
@@ -64,7 +114,7 @@ def from_solution_to_x_u_y(solution,time_horizon,dim):
     u_opt = solution_x_u_y[ dim*time_horizon:dim*time_horizon + control_time ].reshape(( 1, control_time ))   
     y_opt = solution_x_u_y[ dim*time_horizon+control_time: ].reshape((1, time_horizon))
     return [x_opt,u_opt,y_opt]
-
+# Az adott tömböket írja át egy vektorba
 def from_x_u_y_to_solution(x_opt,u_opt,y_opt,time_horizon,dim):
     control_time=int(np.ceil(time_horizon/holding_time))
     x_faltten=cs.reshape(x_opt,time_horizon*dim,1)
@@ -100,52 +150,9 @@ def norm_and_unsqueeze(inputs_agg,hospitalized_agg):
     yhist = OutputData[:30].unsqueeze(0).unsqueeze(2)
     return [uhist,yhist]
 
-def visualize_comapartmental (x_opt,u_opt):
-    plt.grid()
-    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
-    plt.xlabel("Time [days]")
-    plt.ylabel("Hospitalized people")
-    plt.show()
-    plt.grid()
-    plt.plot(np.squeeze(u_opt),color="b",linestyle="",marker=".")
-    plt.legend(['Control signal without rounding'])
-    plt.xlabel("Time [days]")
-    plt.ylabel("Control scenarios")
-    plt.show()
-    plt.grid()
-    plt.plot(np.squeeze (x_opt[0,:]),color="b",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[6,:]),color="g",linestyle="-",marker="")
-    plt.legend(['Susceptibles','Recover'])
-    plt.xlabel("Time [days]")
-    plt.ylabel("Cardinality of the set [sample]")
-    plt.show()
-    plt.grid()
-    plt.plot(np.squeeze (x_opt[1,:]),color="b",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[2,:]),color="g",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[3,:]),color="r",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[4,:]),color="c",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[5,:]),color="m",linestyle="-",marker="")
-    plt.plot(np.squeeze (x_opt[7,:]),color="k",linestyle="-",marker="")
-    plt.legend(['Latent','Pre-symptomatic ','Symptomatic infected','Symptomatic infected but will recover','Hospital','Died'])
-    plt.xlabel("Time [days]")
-    plt.ylabel("Cardinality of the set [sample]")
-    plt.show()
 
-def visualize_execution_time (time_vector):
-    plt.grid()
-    plt.plot(time_vector,color="b",linestyle="",marker=".")
-    plt.legend(['Execution time '])
-    plt.xlabel("Number of the run")
-    plt.ylabel("Time [s]")
-    plt.show()
-    
-def visualize_error(error):
-    plt.grid()
-    plt.plot(np.abs(error),color="b",linestyle="",marker=".")
-    plt.legend(['Error'])
-    plt.xlabel("th week the rror beetwn the encoder and the stepper and maping networks")
-    plt.ylabel("Time [th week]")
-    plt.show()
+
+
 def rounding_for_comparmental(number):
     multiply= number * 17
     
