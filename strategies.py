@@ -4,6 +4,9 @@ from models import Plant,PanSim
 import itertools
 from casadi import vertcat
 from parameters import margin
+# A függvény shrinking horizon stratégiát valósít meg.
+# Az egyes iterációkat az előző iterációban kapott megoldásokkal inicializáljuk, így jobb futási időket érhetünk el.
+# A függvény eltárolja az egyes iterációk futási idejét.
 def shrinking_MPC(noise_MPC,noise_plant,time_horizont,x,grace_time,model,plant,discr) :
     shrinking_time_horizont=time_horizont
     x_first=x
@@ -48,6 +51,9 @@ def shrinking_MPC(noise_MPC,noise_plant,time_horizont,x,grace_time,model,plant,d
     Y_model=np.squeeze(Y_model)
     U=np.squeeze(U)
     return [Y_real,Y_model,U,X_model,execution_times]
+
+# A függvény rolling horizon stratégiát valósít meg, hasonlóan az előzőhöz.
+# A következő iterációban az előző megoldásokkal inicializáljuk a problémát.
 def rolling_MPC(noise_MPC,noise_plant,time_horizont,rolling_horizont,x,grace_time,model,plant,discr):
    
     x_init=np.zeros((model.dim+1)*rolling_horizont+int(np.ceil((rolling_horizont)/holding_time)))
@@ -99,10 +105,11 @@ def rolling_MPC(noise_MPC,noise_plant,time_horizont,rolling_horizont,x,grace_tim
     Y_model=np.squeeze(Y_model)
     U=np.squeeze(U)
     return [Y_real,Y_model,U,X_model,execution_times]
-
+# Lehetőségünk van állandó bemenetet adni a rendszerhez visszacsatolással.
+# Ez a PanSim és a SUBNET identifikáció minőségének vizsgálatára alkalmas.
 def constant_U_values_closed_loop(U,pansim,subnet,time_horizont,x_first):
     time_step=holding_time
-    Y_model=np.empty((1,time_horizont))
+    Y_model=np.empty((1,time_horizont))a
     Y_real=np.empty((1,time_horizont))
     errors=[]
     for i in range(int(np.ceil(time_horizont/holding_time))):
@@ -116,6 +123,7 @@ def constant_U_values_closed_loop(U,pansim,subnet,time_horizont,x_first):
         Y_model[:,i*time_step:time_step*(i+1)]=Y_sub_model[:time_step]
     final_errors=vertcat(*errors)
     return [Y_real,Y_model,final_errors]
+#Visszacsatolás nélküli eset is lehetséges.
 def constant_U_values_open_loop(U,pansim,subnet,time_horizont,x_first):
     time_step=holding_time
     Y_model=np.empty((1,time_horizont))
