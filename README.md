@@ -36,7 +36,9 @@ After the appropriate parameters and classes have been instantiated, a strategy 
 -  **model:** The instantiated of the `Model` class.
 - **plant:** The instantiated of the `Plant` class.
 - **discr:** Determines whether the control input is rounded.
-  The return values:
+
+The return values:
+
 - **Y_real:** The plant's response during the control.
 - **Y_model:** The model's response during the control.
 - **U**: The applied control input
