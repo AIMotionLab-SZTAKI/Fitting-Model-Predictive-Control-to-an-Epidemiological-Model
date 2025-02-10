@@ -4,6 +4,8 @@ from models import Plant,PanSim
 import itertools
 from casadi import vertcat
 from parameters import margin
+
+
 # A függvény shrinking horizon stratégiát valósít meg.
 # Az egyes iterációkat az előző iterációban kapott megoldásokkal inicializáljuk, így jobb futási időket érhetünk el.
 # A függvény eltárolja az egyes iterációk futási idejét.
@@ -109,7 +111,7 @@ def rolling_MPC(noise_MPC,noise_plant,time_horizont,rolling_horizont,x,grace_tim
 # Ez a PanSim és a SUBNET identifikáció minőségének vizsgálatára alkalmas.
 def constant_U_values_closed_loop(U,pansim,subnet,time_horizont,x_first):
     time_step=holding_time
-    Y_model=np.empty((1,time_horizont))a
+    Y_model=np.empty((1,time_horizont))
     Y_real=np.empty((1,time_horizont))
     errors=[]
     for i in range(int(np.ceil(time_horizont/holding_time))):
