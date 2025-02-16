@@ -120,6 +120,9 @@ subnet=Modell(16,system_step_neural,output_mapping_neural)
     grace_time_extended, pansim, pansim, 1
 )
 ```
+# Installation
 
-
-
+First of all, to use the repository use the clone command as:
+```bash
+git clone https://github.com/AIMotionLab-SZTAKI/Model-predictive-control-for-epidemic-management-based-on-neural-network-model
+```
