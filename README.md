@@ -136,4 +136,9 @@ Then, install the necessary libraries:
 ```bash
 pip install -r requirements.txt
 ```
+To install PanSim, follow the instructions in the `How to PanSim.txt` file.  
+The PanSim project can be accessed at the following link:  
 
+```html
+https://github.com/khbence/pansim
+'''
