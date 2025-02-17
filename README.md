@@ -122,8 +122,18 @@ subnet=Modell(16,system_step_neural,output_mapping_neural)
 ```
 # Installation
 
-First of all, to use the repository use the clone command as:
+First of all, to use the repository, clone it using the following command:
 ```bash
 git clone https://github.com/AIMotionLab-SZTAKI/Model-predictive-control-for-epidemic-management-based-on-neural-network-model
 ```
-After this, it is recomdended to create a virtual enviroment to the cloned folder.
+After this, it is recommended to create a virtual environment in the cloned folder.
+If you are using VS Code, open a new command prompt and use the following commands:
+```bash
+python -m venv myenv
+myenv\Scripts\activate
+```
+Then, install the necessary libraries:
+```bash
+pip install -r requirements.txt
+```
+
