@@ -3,14 +3,22 @@ import casadi as cs
 from ann_utils import feed_forward_nn,default_state_net,default_output_net,default_encoder_net
 import numpy as np
 import torch
-y0 = torch.load("norm/y0.pt")
-ystd = torch.load("norm/ystd.pt")
-u0 = torch.load("norm/u0.pt")
-ustd = torch.load("norm/ustd.pt")
+import os
+
+
+cwd = os.path.dirname(__file__)
+
+y0 = torch.load(os.path.join(cwd, "norm", "y0.pt"), weights_only=False)
+ystd = torch.load(os.path.join(cwd, "norm", "ystd.pt"), weights_only=False)
+u0 = torch.load(os.path.join(cwd, "norm", "u0.pt"), weights_only=False)
+ustd = torch.load(os.path.join(cwd, "norm", "ustd.pt"), weights_only=False)
+
 # functions for normalization and denormalization input-output
 unorm = lambda u: (u - u0) / ustd  # Normalizálás a bemenetre
 ynorm = lambda y: (y - y0) / ystd  # Normalizálás a kimenetre
 ydenorm = lambda y: y * ystd + y0  # Denormalizálás a kimenetre
+
+
 class simple_res_net(nn.Module):
     def __init__(self, n_in=6, n_out=5, n_nodes_per_layer=64, n_hidden_layers=2, activation=nn.Tanh):
         # linear + non-linear part
@@ -74,23 +82,26 @@ class casadi_res_net:
             output += nonlin_output
         return output
 
+
 def system_step_neural(casadi_net_f,input_state,input_control):
     input_control=unorm(input_control)
     concatenated_input = cs.horzcat(input_state, input_control)
     next_state = casadi_net_f(concatenated_input)  
     return next_state
 
+
 def output_mapping_neural(casadi_net_h,input_state):
     input_control=unorm(input_state)
     real_output=ydenorm(casadi_net_h(input_state))
     return real_output
 
+
 def get_net_models():
     f = default_state_net(nu = 1, nx = 16)
-    f.load_state_dict(state_dict=torch.load("f_dict.pt"))
+    f.load_state_dict(state_dict=torch.load(os.path.join(cwd, "f_dict.pt"), weights_only=False))
     f.eval()
     h = default_output_net(nx=16, ny=1)
-    h.load_state_dict(state_dict=torch.load("h_dict.pt"))
+    h.load_state_dict(state_dict=torch.load(os.path.join(cwd, "h_dict.pt"), weights_only=False))
     h.eval()
     casadi_net_f = casadi_res_net(f.net)
     casadi_net_h = casadi_res_net(h.net)
@@ -100,9 +111,9 @@ def get_net_models():
     }
     return net_model
     
+
 def get_encoder():
     encoder = default_encoder_net(na=30, nb=30, nu=1, nx=16, ny=1, activation=torch.nn.ReLU, n_nodes_per_layer=32)
-    encoder.load_state_dict(state_dict=torch.load('encoder_dict.pt'))
+    encoder.load_state_dict(state_dict=torch.load(os.path.join(cwd, "encoder_dict.pt"), weights_only=False))
     encoder.eval()
     return encoder
-
